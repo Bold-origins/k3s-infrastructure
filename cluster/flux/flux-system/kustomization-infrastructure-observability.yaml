@@ -1,5 +1,5 @@
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: infrastructure-observability
@@ -11,4 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: infrastructure-repo
-  validation: client 
+  validation: client
+  dependsOn:
+    - name: infrastructure-core  # Depends on core being ready 
