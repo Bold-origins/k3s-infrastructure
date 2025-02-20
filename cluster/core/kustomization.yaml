@@ -1,10 +1,15 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+metadata:
+  name: core
 resources:
-  - cert-manager/helmrelease.yaml
-  - ingress/helmrelease.yaml
+  # Namespaces first
   - namespaces/namespace-infra.yaml
   - namespaces/namespace-observability.yaml
   - namespaces/namespace-security.yaml
+  - namespaces/namespace-storage.yaml
+  # Then other resources
+  - cert-manager/helmrelease.yaml
+  - ingress/helmrelease.yaml
   - secrets/helmrelease.yaml
