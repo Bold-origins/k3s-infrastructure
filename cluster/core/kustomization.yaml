@@ -10,6 +10,6 @@ resources:
   - namespaces/namespace-security.yaml
   - namespaces/namespace-storage.yaml
   # Then other resources
-  - cert-manager/helmrelease.yaml
-  - ingress/helmrelease.yaml
+  - cert-manager
+  - ingress
   - secrets
