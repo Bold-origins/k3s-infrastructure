@@ -1,0 +1,16 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: minio
+  namespace: infra
+spec:
+  chart:
+    name: minio
+    repository: https://charts.min.io
+  releaseName: minio
+  values:
+    minio:
+      persistence:
+        enabled: true
+        size: 10Gi

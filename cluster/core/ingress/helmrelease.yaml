@@ -1,0 +1,43 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: ingress-nginx
+  namespace: infra
+spec:
+  chart:
+    name: ingress-nginx
+    repository: https://kubernetes.github.io/ingress-nginx
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  interval: 1h
+  releaseName: ingress-nginx
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    controller:
+      config:
+        enable-real-ip: 'true'
+        proxy-body-size: 100m
+        use-forwarded-headers: 'true'
+      ingressClassResource:
+        default: true
+        enabled: true
+        name: nginx
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      service:
+        externalTrafficPolicy: Local
+        type: LoadBalancer

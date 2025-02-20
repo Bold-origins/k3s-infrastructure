@@ -1,0 +1,16 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: tempo
+  namespace: observability
+spec:
+  chart:
+    name: tempo
+    repository: https://grafana.github.io/helm-charts
+  releaseName: tempo
+  values:
+    tempo:
+      persistence:
+        enabled: true
+        size: 10Gi

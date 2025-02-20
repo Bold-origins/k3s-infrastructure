@@ -1,0 +1,11 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: falco
+  namespace: security
+spec:
+  chart:
+    name: falco
+    repository: https://falcosecurity.github.io/charts
+  releaseName: falco

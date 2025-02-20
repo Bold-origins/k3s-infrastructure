@@ -1,0 +1,14 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cert-manager
+  namespace: infra
+spec:
+  chart:
+    name: cert-manager
+    repository: https://charts.jetstack.io
+    version: 1.17.1
+  releaseName: cert-manager
+  values:
+    installCRDs: true
