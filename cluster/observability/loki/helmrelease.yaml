@@ -43,3 +43,7 @@ spec:
     persistence:
       enabled: true
       size: 10Gi
+    write:
+      persistence:
+        enabled: true
+        size: 10Gi
