@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: "cluster/core, cluster/observability"
+  path: "cluster/infrastructure"
   prune: true
   sourceRef:
     kind: GitRepository
