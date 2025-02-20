@@ -1,12 +1,17 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: gatekeeper
   namespace: security
 spec:
+  interval: 30m
   chart:
-    name: gatekeeper
-    repository: https://open-policy-agent.github.io/gatekeeper/charts
-    version: 3.x.x
-  releaseName: gatekeeper
+    spec:
+      chart: gatekeeper
+      version: ">=3.12.0"
+      sourceRef:
+        kind: HelmRepository
+        name: gatekeeper
+        namespace: flux-system
+      interval: 12h
