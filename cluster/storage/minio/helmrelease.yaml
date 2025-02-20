@@ -1,14 +1,20 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: minio
   namespace: infra
 spec:
+  interval: 30m
   chart:
-    name: minio
-    repository: https://charts.min.io
-  releaseName: minio
+    spec:
+      chart: minio
+      version: ">=12.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: minio
+        namespace: flux-system
+      interval: 12h
   values:
     minio:
       persistence:
