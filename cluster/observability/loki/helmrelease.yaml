@@ -16,6 +16,24 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
+    loki:
+      auth_enabled: false
+      commonConfig:
+        replication_factor: 1
+        ring:
+          kvstore:
+            store: inmemory
+      storage:
+        type: filesystem
+      schemaConfig:
+        configs:
+          - from: 2020-05-15
+            store: boltdb-shipper
+            object_store: filesystem
+            schema: v11
+            index:
+              prefix: index_
+              period: 24h
     singleBinary:
       replicas: 1
     monitoring:
@@ -23,18 +41,6 @@ spec:
         enabled: false
       lokiCanary:
         enabled: false
-    storage:
-      bucketNames:
-        chunks: chunks
-        ruler: ruler
-        admin: admin
-      type: s3
-      s3:
-        endpoint: minio.storage.svc.cluster.local:9000
-        insecure: true
-        bucketnames: loki-data
-        access_key_id: minioadmin  # Default MinIO credentials
-        secret_access_key: minioadmin  # Default MinIO credentials
     persistence:
       enabled: true
       size: 10Gi

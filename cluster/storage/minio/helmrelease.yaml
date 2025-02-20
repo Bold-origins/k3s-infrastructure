@@ -19,6 +19,9 @@ spec:
     createNamespace: true
   values:
     mode: standalone
+    auth:
+      rootUser: minioadmin
+      rootPassword: minioadmin
     persistence:
       enabled: true
       size: 10Gi
