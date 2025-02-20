@@ -16,7 +16,8 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
-    loki:
-      persistence:
-        enabled: true
-        size: 10Gi
+    persistence:
+      enabled: true
+      size: 10Gi
+    storage:
+      type: filesystem

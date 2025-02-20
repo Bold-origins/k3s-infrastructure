@@ -12,4 +12,6 @@ spec:
     kind: GitRepository
     name: infrastructure-repo
   dependsOn:
+    - name: infrastructure-core
+  dependsOn:
     - name: infrastructure-core  # Depends on core being ready 
