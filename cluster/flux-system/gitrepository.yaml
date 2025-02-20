@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: infrastructure-repo
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/Bold-origins/k3s-infrastructure.git
+  ref:
+    branch: main
