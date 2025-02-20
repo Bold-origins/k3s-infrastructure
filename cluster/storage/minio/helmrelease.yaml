@@ -15,7 +15,15 @@ spec:
         name: minio
         namespace: flux-system
       interval: 12h
+  install:
+    createNamespace: true
   values:
+    mode: standalone
     persistence:
       enabled: true
       size: 10Gi
+    resources:
+      requests:
+        memory: 1Gi
+    service:
+      type: ClusterIP
