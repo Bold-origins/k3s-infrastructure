@@ -34,8 +34,6 @@ spec:
             index:
               prefix: index_
               period: 24h
-    singleBinary:
-      replicas: 1
     monitoring:
       selfMonitoring:
         enabled: false
