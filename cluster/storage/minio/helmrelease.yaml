@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: minio
-  namespace: infra
+  namespace: storage
 spec:
   interval: 30m
   chart:
@@ -16,7 +16,6 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
-    minio:
-      persistence:
-        enabled: true
-        size: 10Gi
+    persistence:
+      enabled: true
+      size: 10Gi
