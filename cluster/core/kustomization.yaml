@@ -12,4 +12,4 @@ resources:
   # Then other resources
   - cert-manager/helmrelease.yaml
   - ingress/helmrelease.yaml
-  - secrets/helmrelease.yaml
+  - secrets
