@@ -11,5 +11,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: infrastructure-repo
-  validation: client
   dependsOn: []  # This is the first to be applied 
