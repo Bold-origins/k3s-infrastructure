@@ -16,21 +16,13 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
-    loki:
-      auth_enabled: false
-      storage:
-        type: filesystem
-      storage_config:
-        filesystem:
-          chunks_directory: /var/loki/chunks
-          rules_directory: /var/loki/rules
-      commonConfig:
-        path_prefix: /var/loki
-        replication_factor: 1
-        storage:
-          filesystem:
-            chunks_directory: /var/loki/chunks
-            rules_directory: /var/loki/rules
+    singleBinary:
+      replicas: 1
     persistence:
       enabled: true
       size: 10Gi
+    monitoring:
+      selfMonitoring:
+        enabled: false
+      lokiCanary:
+        enabled: false
