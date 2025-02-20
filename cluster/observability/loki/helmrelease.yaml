@@ -18,11 +18,23 @@ spec:
   values:
     singleBinary:
       replicas: 1
-    persistence:
-      enabled: true
-      size: 10Gi
     monitoring:
       selfMonitoring:
         enabled: false
       lokiCanary:
         enabled: false
+    storage:
+      bucketNames:
+        chunks: chunks
+        ruler: ruler
+        admin: admin
+      type: s3
+      s3:
+        endpoint: minio.storage.svc.cluster.local:9000
+        insecure: true
+        bucketnames: loki-data
+        access_key_id: minioadmin  # Default MinIO credentials
+        secret_access_key: minioadmin  # Default MinIO credentials
+    persistence:
+      enabled: true
+      size: 10Gi
