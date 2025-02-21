@@ -49,4 +49,4 @@ spec:
         ports:
           http: 80
           https: 443
-        type: NodePort
+        type: LoadBalancer
