@@ -9,5 +9,5 @@ spec:
         kinds: ["Pod"]
     excludedNamespaces: ["kube-system", "flux-system"]
     excludeResources:
-      - name: "cm-acme-http-solver-*"
+      - name: "*-acmesolver-*"
         kinds: ["Pod"] 
