@@ -7,6 +7,10 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Namespace"]
-    excludedNamespaces: ["kube-system", "kube-public", "kube-node-lease", "default", "flux-system"]
+    labelSelector:
+      matchExpressions:
+        - key: kustomize.toolkit.fluxcd.io/name
+          operator: In
+          values: ["infrastructure-core", "infrastructure-security", "infrastructure-observability", "infrastructure-storage"]
   parameters:
     labels: ["environment", "owner"] 
