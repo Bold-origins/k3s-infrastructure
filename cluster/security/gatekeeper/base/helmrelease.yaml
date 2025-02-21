@@ -35,8 +35,16 @@ spec:
     constraintViolationsLimit: 100
     audit:
       enabled: true
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
     validatingWebhookTimeoutSeconds: 3
     mutatingWebhookTimeoutSeconds: 3
     enableExternalData: true
     admissionController:
       replicas: 1
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
