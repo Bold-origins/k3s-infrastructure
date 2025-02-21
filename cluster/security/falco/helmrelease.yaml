@@ -5,37 +5,33 @@ metadata:
   name: falco
   namespace: security
 spec:
-  interval: 30m
   chart:
     spec:
       chart: falco
-      version: ">=3.0.0"
+      interval: 12h
       sourceRef:
         kind: HelmRepository
         name: falco-security
         namespace: flux-system
-      interval: 12h
+      version: '>=3.0.0'
+  interval: 30m
   values:
-    # Enable Prometheus metrics
-    prometheus:
+    # Enable audit logs
+    auditLog:
       enabled: true
-      serviceMonitor:
-        enabled: true
-    
-    # Configure logging to work with Loki
-    json_output: true
-    json_include_output_property: true
-    
     # Configure Falco exporter for better Prometheus metrics
     falco-exporter:
       enabled: true
       serviceMonitor:
         enabled: true
-    
-    # Enable audit logs
-    auditLog:
+    json_include_output_property: true
+    # Configure logging to work with Loki
+    json_output: true
+    # Enable Prometheus metrics
+    prometheus:
       enabled: true
-    
+      serviceMonitor:
+        enabled: true
     # Configure rules output format
     rules:
       # Send output in JSON format for better integration

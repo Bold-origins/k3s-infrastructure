@@ -6,3 +6,4 @@ resources:
   - tempo
   - loki
   - secrets
+  - grafana-ingress.yaml

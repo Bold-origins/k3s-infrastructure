@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: boldorigins-io-tls
+  namespace: infra
+spec:
+  secretName: boldorigins-io-tls
+  dnsNames:
+    - "*.boldorigins.io"
+    - "boldorigins.io"
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer 

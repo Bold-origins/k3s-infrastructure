@@ -14,4 +14,4 @@ spec:
   dependsOn:
     - name: infrastructure-core  # Depends on core being ready
   wait: true
-  timeout: 5m 
+  timeout: 5m
