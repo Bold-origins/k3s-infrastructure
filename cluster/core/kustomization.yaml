@@ -9,6 +9,8 @@ resources:
   - namespaces/namespace-observability.yaml
   - namespaces/namespace-security.yaml
   - namespaces/namespace-storage.yaml
+  # Then repositories
+  - repositories
   # Then other resources
   - cert-manager
   - ingress
