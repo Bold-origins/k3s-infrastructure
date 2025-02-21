@@ -35,6 +35,13 @@ spec:
     constraintViolationsLimit: 100
     audit:
       enabled: true
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
     validatingWebhookTimeoutSeconds: 3
     mutatingWebhookTimeoutSeconds: 3
     enableExternalData: true
@@ -51,3 +58,10 @@ spec:
           - ALL
     admissionController:
       replicas: 1
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
