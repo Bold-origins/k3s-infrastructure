@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - gitrepository.yaml
-  - ../../repositories
+  - kustomization-repositories.yaml
   - kustomization-infrastructure-core.yaml
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-security.yaml
