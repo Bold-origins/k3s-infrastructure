@@ -5,6 +5,9 @@ resources:
   - base/helmrelease.yaml
   # Wait for CRDs
   - wait.yaml
-  # Create a separate directory for templates and constraints
+  # Apply templates first
   - policies/templates/
+  # Wait for templates to be established
+  - wait-for-templates.yaml
+  # Then apply constraints
   - policies/constraints/ 
