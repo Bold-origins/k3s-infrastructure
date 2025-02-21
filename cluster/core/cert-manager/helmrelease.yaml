@@ -15,6 +15,10 @@ spec:
         name: jetstack
         namespace: flux-system
       interval: 12h
+  install:
+    timeout: 10m
+  upgrade:
+    timeout: 10m
   values:
     installCRDs: true
     resources:
