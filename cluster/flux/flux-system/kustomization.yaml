@@ -3,10 +3,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: flux-system
 resources:
-  - gitrepository.yaml
-  - kustomization-repositories.yaml
+  - gotk-components.yaml
+  - gotk-sync.yaml
   - kustomization-infrastructure-core.yaml
-  - kustomization-infrastructure-tls.yaml
-  - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-security.yaml
+  - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-storage.yaml
