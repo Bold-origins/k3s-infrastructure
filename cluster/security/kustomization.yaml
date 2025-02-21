@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
   - vault
   - gatekeeper
-  - gatekeeper/policies
   - secrets
