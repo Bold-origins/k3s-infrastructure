@@ -13,3 +13,4 @@ resources:
   - cert-manager
   - ingress
   - secrets
+  - secrets/cluster-secrets.yaml

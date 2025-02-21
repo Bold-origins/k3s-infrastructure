@@ -1,8 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  # First install Gatekeeper
   - base/helmrelease.yaml
+  # Wait for CRDs
   - wait.yaml
+  # Create a separate directory for templates and constraints
+  - policies/templates/
+  - policies/constraints/
   # Templates first
   - policies/templates/container-limits-template.yaml
   - policies/templates/nonroot-template.yaml
