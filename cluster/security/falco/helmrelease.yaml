@@ -15,3 +15,28 @@ spec:
         name: falco-security
         namespace: flux-system
       interval: 12h
+  values:
+    # Enable Prometheus metrics
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    
+    # Configure logging to work with Loki
+    json_output: true
+    json_include_output_property: true
+    
+    # Configure Falco exporter for better Prometheus metrics
+    falco-exporter:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    
+    # Enable audit logs
+    auditLog:
+      enabled: true
+    
+    # Configure rules output format
+    rules:
+      # Send output in JSON format for better integration
+      outputFormat: json
