@@ -10,8 +10,12 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: infrastructure-repo
+    name: flux-system
   dependsOn:
     - name: infrastructure-core  # Depends on core being ready
   wait: true
   timeout: 5m
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets

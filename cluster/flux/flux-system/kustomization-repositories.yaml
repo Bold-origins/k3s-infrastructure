@@ -6,8 +6,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  path: "./cluster/repositories"
+  path: "cluster/repositories"
   prune: true
   sourceRef:
     kind: GitRepository
-    name: infrastructure-repo 
+    name: flux-system
+  wait: true
+  timeout: 5m 
