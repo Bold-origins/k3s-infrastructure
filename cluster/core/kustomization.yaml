@@ -14,3 +14,5 @@ resources:
   - ingress
   - secrets
   - secrets/cluster-secrets.yaml
+  # TLS resources last (after cert-manager is ready)
+  - tls
