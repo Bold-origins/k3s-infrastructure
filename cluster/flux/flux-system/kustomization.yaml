@@ -6,6 +6,7 @@ resources:
   - gitrepository.yaml
   - kustomization-repositories.yaml
   - kustomization-infrastructure-core.yaml
+  - kustomization-infrastructure-tls.yaml
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-security.yaml
   - kustomization-infrastructure-storage.yaml
