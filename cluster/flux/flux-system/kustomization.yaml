@@ -9,3 +9,5 @@ resources:
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-security.yaml
   - kustomization-infrastructure-storage.yaml
+  - kustomization-gatekeeper.yaml
+  - kustomization-gatekeeper-policies.yaml
