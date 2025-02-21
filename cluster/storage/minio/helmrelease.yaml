@@ -33,3 +33,15 @@ spec:
         memory: 1Gi
     service:
       type: ClusterIP
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+      fsGroup: 2000
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
