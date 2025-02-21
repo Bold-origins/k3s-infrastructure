@@ -7,6 +7,6 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Namespace"]
-    excludedNamespaces: ["kube-system", "flux-system"]
+    excludedNamespaces: ["kube-system", "kube-public", "kube-node-lease", "default", "flux-system"]
   parameters:
     labels: ["environment", "owner"] 
