@@ -1,0 +1,24 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sContainerLimits
+metadata:
+  name: audit-container-limits
+spec:
+  enforcementAction: dryrun # This will only audit, not block
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+  parameters:
+    cpu: "2"
+    memory: "4Gi"
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sNonRoot
+metadata:
+  name: audit-nonroot-containers
+spec:
+  enforcementAction: dryrun # This will only audit, not block
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"] 
