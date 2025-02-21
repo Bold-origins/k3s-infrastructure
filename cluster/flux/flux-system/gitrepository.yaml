@@ -8,6 +8,6 @@ spec:
   interval: 1m
   ref:
     branch: main
-  url: https://github.com/yourusername/k3s-infrastructure
+  url: https://github.com/Bold-origins/k3s-infrastructure.git
   secretRef:
     name: flux-system
