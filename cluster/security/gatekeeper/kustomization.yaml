@@ -4,4 +4,6 @@ resources:
   # First install Gatekeeper
   - base/
   # Wait for CRDs and deployment
-  - wait.yaml 
+  - wait.yaml
+  # Then apply templates and constraints
+  - policies/ 
