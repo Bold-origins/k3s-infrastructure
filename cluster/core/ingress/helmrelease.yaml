@@ -46,4 +46,7 @@ spec:
           memory: 128Mi
       service:
         externalTrafficPolicy: Local
-        type: LoadBalancer
+        type: NodePort
+        nodePorts:
+          http: 30080
+          https: 30443
