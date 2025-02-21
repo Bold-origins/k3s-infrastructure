@@ -9,7 +9,13 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-    - http01:
+    - selector:
+        dnsNames:
+        - "boldorigins.io"
+        - "grafana.boldorigins.io"
+        - "vault.boldorigins.io"
+        - "minio.boldorigins.io"
+      http01:
         ingress:
           class: nginx
           serviceType: NodePort 
