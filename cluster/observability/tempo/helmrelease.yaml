@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: tempo
-      version: ">=1.0.0"
+      version: "1.18.2"
       sourceRef:
         kind: HelmRepository
         name: grafana
@@ -34,8 +34,14 @@ spec:
               endpoint: "0.0.0.0:4318"
       server:
         http_listen_port: 3200
-      frontend:
-        enabled: true
+      distributor:
+        receivers:
+          otlp:
+            protocols:
+              grpc:
+                endpoint: "0.0.0.0:4317"
+              http:
+                endpoint: "0.0.0.0:4318"
       ingester:
         trace_idle_period: "30s"
         max_block_bytes: 1_000_000
