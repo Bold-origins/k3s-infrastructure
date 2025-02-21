@@ -46,7 +46,7 @@ spec:
           memory: 128Mi
       service:
         externalTrafficPolicy: Local
+        ports:
+          http: 80
+          https: 443
         type: NodePort
-        nodePorts:
-          http: 30080
-          https: 30443
