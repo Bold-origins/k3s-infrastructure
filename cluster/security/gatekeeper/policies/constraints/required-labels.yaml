@@ -10,7 +10,6 @@ spec:
     labelSelector:
       matchExpressions:
         - key: kustomize.toolkit.fluxcd.io/name
-          operator: In
-          values: ["infrastructure-core", "infrastructure-security", "infrastructure-observability", "infrastructure-storage"]
+          operator: Exists
   parameters:
     labels: ["environment", "owner"] 
