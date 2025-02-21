@@ -2,3 +2,6 @@
 
 things to do:
 kubectl get helmreleases -A
+
+Username: admin
+Password: supersecret123
