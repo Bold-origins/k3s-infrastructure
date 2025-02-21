@@ -13,7 +13,6 @@ resources:
   - repositories
   # Then other resources
   - cert-manager/base
-  - cert-manager/config
   - ingress
   - secrets
   - secrets/cluster-secrets.yaml

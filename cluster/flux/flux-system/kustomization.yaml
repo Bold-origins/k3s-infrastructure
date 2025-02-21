@@ -6,6 +6,7 @@ resources:
   - gotk-components.yaml
   - gotk-sync.yaml
   - kustomization-infrastructure-core.yaml
+  - kustomization-infrastructure-cert-manager-config.yaml
   - kustomization-infrastructure-security.yaml
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-storage.yaml
