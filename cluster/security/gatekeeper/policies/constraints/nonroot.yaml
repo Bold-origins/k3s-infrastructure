@@ -10,12 +10,4 @@ spec:
       - cert-manager
     kinds:
       - apiGroups: [""]
-        kinds: ["Pod"]
-    excludedNamespaceSelectors:
-      - matchExpressions:
-          - key: kubernetes.io/metadata.name
-            operator: In
-            values: ["cert-manager"]
-    excludedResources:
-      - name: "*-acmesolver-*"
         kinds: ["Pod"] 
