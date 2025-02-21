@@ -13,3 +13,10 @@ spec:
     name: infrastructure-repo
   dependsOn:
     - name: infrastructure-core
+  wait: true
+  timeout: 5m
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2beta2
+      kind: HelmRelease
+      name: minio
+      namespace: storage

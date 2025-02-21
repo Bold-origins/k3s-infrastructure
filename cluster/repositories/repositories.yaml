@@ -1,5 +1,5 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: grafana
@@ -8,7 +8,7 @@ spec:
   interval: 30m
   url: https://grafana.github.io/helm-charts
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: bitnami
@@ -17,7 +17,7 @@ spec:
   interval: 30m
   url: https://charts.bitnami.com/bitnami
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: prometheus-community
@@ -26,7 +26,7 @@ spec:
   interval: 30m
   url: https://prometheus-community.github.io/helm-charts
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: falco-security
@@ -35,7 +35,7 @@ spec:
   interval: 30m
   url: https://falcosecurity.github.io/charts
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: gatekeeper
@@ -44,7 +44,7 @@ spec:
   interval: 30m
   url: https://open-policy-agent.github.io/gatekeeper/charts
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: hashicorp
@@ -53,7 +53,7 @@ spec:
   interval: 30m
   url: https://helm.releases.hashicorp.com
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: minio
@@ -62,7 +62,7 @@ spec:
   interval: 30m
   url: https://charts.min.io
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: ingress-nginx
@@ -71,7 +71,7 @@ spec:
   interval: 30m
   url: https://kubernetes.github.io/ingress-nginx
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: sealed-secrets
@@ -80,7 +80,7 @@ spec:
   interval: 30m
   url: https://bitnami-labs.github.io/sealed-secrets
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: jetstack

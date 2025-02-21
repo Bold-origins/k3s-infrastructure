@@ -9,10 +9,10 @@ spec:
   chart:
     spec:
       chart: minio
-      version: "15.0.4"
+      version: "5.0.13"
       sourceRef:
         kind: HelmRepository
-        name: bitnami
+        name: minio
         namespace: flux-system
       interval: 30m
   install:
