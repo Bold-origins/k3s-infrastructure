@@ -11,7 +11,4 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
-      selector:
-        dnsZones:
-          - "boldorigins.io" 
+          class: nginx 
