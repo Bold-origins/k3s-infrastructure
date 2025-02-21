@@ -6,8 +6,10 @@ metadata:
 spec:
   secretName: boldorigins-io-tls
   dnsNames:
-    - "*.boldorigins.io"
     - "boldorigins.io"
+    - "grafana.boldorigins.io"
+    - "vault.boldorigins.io"
+    - "minio.boldorigins.io"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer 
