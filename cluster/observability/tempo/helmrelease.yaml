@@ -34,10 +34,8 @@ spec:
               endpoint: "0.0.0.0:4318"
       server:
         http_listen_port: 3200
-      queryFrontend:
+      frontend:
         enabled: true
-        query:
-          enabled: true
       ingester:
         trace_idle_period: "30s"
         max_block_bytes: 1_000_000
