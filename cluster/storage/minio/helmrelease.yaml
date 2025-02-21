@@ -9,24 +9,27 @@ spec:
   chart:
     spec:
       chart: minio
-      version: "12.0.x"
+      version: "12.8.12"
       sourceRef:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
-      interval: 12h
+      interval: 30m
   install:
     createNamespace: true
   values:
     mode: standalone
     auth:
-      rootUser: minioadmin
-      rootPassword: minioadmin
+      existingSecret: minio-credentials
     persistence:
       enabled: true
       size: 10Gi
     resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
       requests:
+        cpu: 250m
         memory: 1Gi
     service:
       type: ClusterIP
