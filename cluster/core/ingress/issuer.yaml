@@ -5,7 +5,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: your-email@boldorigins.io  # Replace with your email
+    email: rodrigo.mourey@boldorigins.io
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
