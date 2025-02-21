@@ -26,6 +26,9 @@ spec:
       remediateLastFailure: true
   values:
     installCRDs: true
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
     resources:
       limits:
         cpu: 500m
@@ -34,6 +37,9 @@ spec:
         cpu: 100m
         memory: 256Mi
     webhook:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
       resources:
         limits:
           cpu: 500m
@@ -42,6 +48,9 @@ spec:
           cpu: 100m
           memory: 256Mi
     cainjector:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
       resources:
         limits:
           cpu: 500m
@@ -50,6 +59,9 @@ spec:
           cpu: 100m
           memory: 256Mi
     startupapicheck:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
       resources:
         limits:
           cpu: 200m
