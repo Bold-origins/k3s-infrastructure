@@ -6,3 +6,6 @@ resources:
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-security.yaml
   - kustomization-infrastructure-storage.yaml
+  - gotk-components.yaml
+  - gotk-sync.yaml
+  - ../repositories
