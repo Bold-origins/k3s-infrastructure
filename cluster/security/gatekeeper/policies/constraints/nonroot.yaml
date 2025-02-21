@@ -8,6 +8,7 @@ spec:
       - kube-system
       - flux-system
       - cert-manager
+      - infra
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"] 
