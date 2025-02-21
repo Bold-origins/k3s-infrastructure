@@ -11,7 +11,4 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
-      selector:
-        matchLabels:
-          "cert-manager.io/solver": "http01" 
+          class: nginx 
