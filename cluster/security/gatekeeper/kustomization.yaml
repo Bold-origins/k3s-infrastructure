@@ -9,5 +9,4 @@ resources:
   # Then constraints
   - policies/constraints/container-limits.yaml
   - policies/constraints/nonroot.yaml
-  - policies/constraints/required-labels.yaml
-  - policies/constraints/audit.yaml 
+  - policies/constraints/required-labels.yaml 
