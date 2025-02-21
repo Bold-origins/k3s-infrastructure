@@ -3,6 +3,8 @@ kind: Certificate
 metadata:
   name: boldorigins-io-tls
   namespace: infra
+  labels:
+    cert-manager.io/solver: "http01"
 spec:
   secretName: boldorigins-io-tls
   dnsNames:
