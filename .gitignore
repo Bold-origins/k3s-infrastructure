@@ -184,3 +184,5 @@ scripts/ui-credentials.txt
 .vscode/
 *.swp
 *.swo
+
+scripts/ui-credentials.txt

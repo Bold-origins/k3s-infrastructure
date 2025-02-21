@@ -20,3 +20,25 @@ spec:
       persistence:
         enabled: true
         size: 10Gi
+      storage:
+        trace:
+          backend: local
+          local:
+            path: /var/tempo/traces
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: "0.0.0.0:4317"
+            http:
+              endpoint: "0.0.0.0:4318"
+      server:
+        http_listen_port: 3200
+      queryFrontend:
+        enabled: true
+        query:
+          enabled: true
+      ingester:
+        trace_idle_period: "30s"
+        max_block_bytes: 1_000_000
+        max_block_duration: "5m"
