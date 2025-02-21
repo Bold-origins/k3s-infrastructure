@@ -26,9 +26,17 @@ spec:
       remediateLastFailure: true
   values:
     installCRDs: true
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1001
+    global:
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
     resources:
       limits:
         cpu: 500m
@@ -37,9 +45,6 @@ spec:
         cpu: 100m
         memory: 256Mi
     webhook:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
       resources:
         limits:
           cpu: 500m
@@ -48,9 +53,6 @@ spec:
           cpu: 100m
           memory: 256Mi
     cainjector:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
       resources:
         limits:
           cpu: 500m
@@ -59,9 +61,6 @@ spec:
           cpu: 100m
           memory: 256Mi
     startupapicheck:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
       resources:
         limits:
           cpu: 200m
