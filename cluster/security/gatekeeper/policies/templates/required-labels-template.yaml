@@ -25,17 +25,4 @@ spec:
           missing := required - provided
           count(missing) > 0
           msg := sprintf("Missing required labels: %v", [missing])
-        }
----
-apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sRequiredLabels
-metadata:
-  name: require-environment-label
-spec:
-  match:
-    kinds:
-      - apiGroups: [""]
-        kinds: ["Namespace"]
-    excludedNamespaces: ["kube-system", "flux-system"]
-  parameters:
-    labels: ["environment", "owner"] 
+        } 

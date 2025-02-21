@@ -3,7 +3,7 @@ kind: K8sContainerLimits
 metadata:
   name: audit-container-limits
 spec:
-  enforcementAction: dryrun # This will only audit, not block
+  enforcementAction: dryrun
   match:
     kinds:
       - apiGroups: [""]
@@ -17,7 +17,7 @@ kind: K8sNonRoot
 metadata:
   name: audit-nonroot-containers
 spec:
-  enforcementAction: dryrun # This will only audit, not block
+  enforcementAction: dryrun
   match:
     kinds:
       - apiGroups: [""]

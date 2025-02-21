@@ -2,6 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helmrelease.yaml
-  - policies/require-labels.yaml
-  - policies/container-security.yaml
-  - policies/audit.yaml 
+  # Templates must be applied first
+  - policies/templates/container-limits-template.yaml
+  - policies/templates/nonroot-template.yaml
+  - policies/templates/required-labels-template.yaml
+  # Then constraints
+  - policies/constraints/container-limits.yaml
+  - policies/constraints/nonroot.yaml
+  - policies/constraints/required-labels.yaml
+  - policies/constraints/audit.yaml 
