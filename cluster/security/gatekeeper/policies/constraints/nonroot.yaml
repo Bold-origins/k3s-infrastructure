@@ -7,4 +7,7 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
-    excludedNamespaces: ["kube-system", "flux-system"] 
+    excludedNamespaces: ["kube-system", "flux-system"]
+    excludeResources:
+      - name: "cm-acme-http-solver-*"
+        kinds: ["Pod"] 
