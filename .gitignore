@@ -169,3 +169,18 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Credentials and secrets
+scripts/ui-credentials.txt
+*.env
+
+# Temporary files
+*.tmp
+*~
+.DS_Store
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
