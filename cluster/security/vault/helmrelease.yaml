@@ -17,6 +17,13 @@ spec:
       interval: 12h
   values:
     server:
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
       dataStorage:
         enabled: true
         size: 10Gi
@@ -28,3 +35,10 @@ spec:
         enabled: true
         sidecar:
           enabled: true
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
