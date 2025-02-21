@@ -12,7 +12,6 @@ spec:
     - http01:
         ingress:
           class: nginx
-          serviceType: NodePort
       selector:
         matchLabels:
           "cert-manager.io/solver": "http01" 
