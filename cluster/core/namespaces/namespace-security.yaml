@@ -4,3 +4,5 @@ metadata:
   name: security
   labels:
     name: security
+    environment: production
+    owner: platform-team
