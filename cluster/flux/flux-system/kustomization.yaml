@@ -8,4 +8,5 @@ resources:
   - kustomization-infrastructure-core.yaml
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-security.yaml
+  - kustomization-infrastructure-security-policies.yaml
   - kustomization-infrastructure-storage.yaml
