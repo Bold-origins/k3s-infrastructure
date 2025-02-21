@@ -4,10 +4,17 @@ metadata:
   name: pods-must-run-as-nonroot
 spec:
   match:
+    excludedNamespaces:
+      - kube-system
+      - flux-system
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
-    excludedNamespaces: ["kube-system", "flux-system"]
+    excludedNamespaceSelectors:
+      - matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: In
+            values: ["cert-manager"]
     excludedResources:
       - name: "*-acmesolver-*"
         kinds: ["Pod"] 
