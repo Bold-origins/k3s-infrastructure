@@ -16,11 +16,25 @@ spec:
         - /bin/sh
         - -c
         - |
-          kubectl wait --for=condition=established --timeout=60s crd/constrainttemplates.templates.gatekeeper.sh &&
-          kubectl wait --for=condition=established --timeout=60s crd/configs.config.gatekeeper.sh &&
-          kubectl wait --for=condition=available --timeout=60s -n security deployment/gatekeeper-controller-manager
+          # Wait for Gatekeeper CRDs
+          echo "Waiting for Gatekeeper CRDs..."
+          kubectl wait --for=condition=established --timeout=120s crd/constrainttemplates.templates.gatekeeper.sh &&
+          kubectl wait --for=condition=established --timeout=120s crd/configs.config.gatekeeper.sh || exit 1
+
+          # Wait for Gatekeeper deployment
+          echo "Waiting for Gatekeeper deployment..."
+          kubectl wait --for=condition=available --timeout=120s -n security deployment/gatekeeper-controller-manager || exit 1
+
+          # Wait for webhook to be ready
+          echo "Waiting for webhook to be ready..."
+          until kubectl get validatingwebhookconfigurations gatekeeper-validating-webhook-configuration; do
+            echo "Waiting for webhook configuration..."
+            sleep 2
+          done
+
+          echo "All components are ready!"
       restartPolicy: OnFailure
-  backoffLimit: 3
+  backoffLimit: 5
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -38,6 +52,9 @@ rules:
   verbs: ["get", "list", "watch"]
 - apiGroups: ["apps"]
   resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingwebhookconfigurations"]
   verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1

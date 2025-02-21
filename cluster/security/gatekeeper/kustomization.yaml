@@ -3,11 +3,8 @@ kind: Kustomization
 resources:
   # First install Gatekeeper
   - base/helmrelease.yaml
-  # Wait for CRDs
+  # Wait for CRDs and deployment
   - wait.yaml
-  # Apply templates first
+  # Apply templates and constraints
   - policies/templates/
-  # Wait for templates to be established
-  - wait-for-templates.yaml
-  # Then apply constraints
   - policies/constraints/ 
