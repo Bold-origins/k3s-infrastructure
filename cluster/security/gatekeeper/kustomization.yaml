@@ -8,10 +8,6 @@ resources:
   # Create a separate directory for templates and constraints
   - policies/templates/
   - policies/constraints/
-  # Templates first
-  - policies/templates/container-limits-template.yaml
-  - policies/templates/nonroot-template.yaml
-  - policies/templates/required-labels-template.yaml
   # Then constraints
   - policies/constraints/container-limits.yaml
   - policies/constraints/nonroot.yaml
