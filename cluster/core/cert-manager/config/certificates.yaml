@@ -4,12 +4,27 @@ metadata:
   name: boldorigins-io-tls
   namespace: infra
 spec:
-  secretName: boldorigins-io-tls
   dnsNames:
-    - "boldorigins.io"
-    - "grafana.boldorigins.io"
-    - "vault.boldorigins.io"
-    - "minio.boldorigins.io"
+  - boldorigins.io
+  - grafana.boldorigins.io
+  - vault.boldorigins.io
+  - minio.boldorigins.io
   issuerRef:
+    kind: ClusterIssuer
     name: letsencrypt-prod
-    kind: ClusterIssuer 
+  secretName: boldorigins-io-tls
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: rodrigo.mourey@boldorigins.io
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+    - http01:
+        ingress:
+          class: nginx 

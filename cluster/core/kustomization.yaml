@@ -4,15 +4,13 @@ kind: Kustomization
 metadata:
   name: core
 resources:
-  # Namespaces first
-  - namespaces/namespace-infra.yaml
-  - namespaces/namespace-observability.yaml
-  - namespaces/namespace-security.yaml
-  - namespaces/namespace-storage.yaml
+  # First namespaces
+  - namespaces
   # Then repositories
   - repositories
   # Then other resources
-  - cert-manager
+  - cert-manager/base
+  - cert-manager/config
   - ingress
   - secrets
   - secrets/cluster-secrets.yaml
