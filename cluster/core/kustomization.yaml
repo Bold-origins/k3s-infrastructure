@@ -12,6 +12,7 @@ resources:
   # Then repositories
   - repositories
   # Then other resources
+  - metallb
   - cert-manager/base
   - ingress
   - secrets
