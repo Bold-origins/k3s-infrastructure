@@ -17,9 +17,11 @@ spec:
       interval: 12h
   install:
     createNamespace: true
+    crds: Create
     remediation:
       retries: 3
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: 3
   values:
@@ -28,6 +30,4 @@ spec:
         enabled: true
     speaker:
       frr:
-        enabled: false
-    crds:
-      enabled: true 
+        enabled: false 
