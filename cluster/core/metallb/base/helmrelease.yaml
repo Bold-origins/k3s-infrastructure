@@ -27,7 +27,7 @@ spec:
   values:
     prometheus:
       serviceMonitor:
-        enabled: true
+        enabled: false  # Disable service monitor for now until we have proper Prometheus setup
     speaker:
       frr:
         enabled: false 
