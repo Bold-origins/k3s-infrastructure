@@ -11,10 +11,12 @@ resources:
   - namespaces/namespace-storage.yaml
   # Then repositories
   - repositories
-  # Then other resources
+  # Then MetalLB base (HelmRelease) first
   - metallb/base
-  - metallb/config
+  # Other resources
   - cert-manager/base
   - ingress
   - secrets
   - secrets/cluster-secrets.yaml
+  # MetalLB config last (after CRDs are installed)
+  - metallb/config
