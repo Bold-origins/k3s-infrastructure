@@ -6,7 +6,8 @@ metadata:
   namespace: infra
 spec:
   addresses:
-    - 147.93.89.31/32
+    - 147.93.89.100-147.93.89.120  # Allocating a range of 21 IPs for load balancers
+  autoAssign: true
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
