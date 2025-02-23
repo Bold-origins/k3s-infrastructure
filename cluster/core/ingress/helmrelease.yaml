@@ -64,7 +64,7 @@ spec:
       publishService:
         enabled: true
       extraArgs:
-        - --enable-ssl-passthrough
+        enable-ssl-passthrough: ""
       containerPort:
         http: 80
         https: 443
