@@ -25,6 +25,8 @@ spec:
       retries: 3
   values:
     controller:
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
       config:
         enable-real-ip: 'true'
         proxy-body-size: 100m
@@ -63,3 +65,7 @@ spec:
         enabled: true
       extraArgs:
         - --enable-ssl-passthrough
+      containerPort:
+        http: 80
+        https: 443
+        healthz: 10254
