@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: test-ingress
+  name: vault-ingress
   namespace: infra
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -10,13 +10,26 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: test.boldorigins.io
+  - host: vault.boldorigins.io
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: test-web
+            name: vault
             port:
-              number: 80 
+              number: 8200
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-boldorigins-io-tls
+  namespace: infra
+spec:
+  secretName: vault-boldorigins-io-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - vault.boldorigins.io 
