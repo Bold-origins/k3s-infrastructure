@@ -29,6 +29,9 @@ spec:
         enable-real-ip: 'true'
         proxy-body-size: 100m
         use-forwarded-headers: 'true'
+        proxy-connect-timeout: '180'
+        proxy-read-timeout: '180'
+        proxy-send-timeout: '180'
       ingressClassResource:
         default: true
         enabled: true
@@ -45,8 +48,19 @@ spec:
           cpu: 100m
           memory: 128Mi
       service:
+        enabled: true
         externalTrafficPolicy: Local
         ports:
           http: 80
           https: 443
+        targetPorts:
+          http: http
+          https: https
         type: LoadBalancer
+      hostPort:
+        enabled: true
+        ports:
+          http: 80
+          https: 443
+      publishService:
+        enabled: true
