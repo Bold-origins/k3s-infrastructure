@@ -9,10 +9,6 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - test.boldorigins.io
-    secretName: test-boldorigins-io-tls
   rules:
   - host: test.boldorigins.io
     http:
