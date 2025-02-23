@@ -51,7 +51,7 @@ spec:
           memory: 128Mi
       service:
         enabled: true
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
         annotations:
           metallb.universe.tf/allow-shared-ip: "true"
         ports:
