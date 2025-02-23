@@ -50,6 +50,8 @@ spec:
       service:
         enabled: true
         externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/allow-shared-ip: "true"
         ports:
           http: 80
           https: 443
@@ -57,10 +59,7 @@ spec:
           http: http
           https: https
         type: LoadBalancer
-      hostPort:
-        enabled: true
-        ports:
-          http: 80
-          https: 443
       publishService:
         enabled: true
+      extraArgs:
+        - --enable-ssl-passthrough
