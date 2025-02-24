@@ -28,8 +28,8 @@ spec:
           endpoint: minio.storage.svc.cluster.local:9000
           insecure: true
           bucketnames: loki-data
-          access_key_id: ${MINIO_ACCESS_KEY}
-          secret_access_key: ${MINIO_SECRET_KEY}
+          access_key_id: ${ACCESS_KEY_ID}
+          secret_access_key: ${SECRET_ACCESS_KEY}
       auth_enabled: false
       commonConfig:
         replication_factor: 1
@@ -53,6 +53,15 @@ spec:
         requests:
           cpu: 100m
           memory: 256Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
     read:
       resources:
         limits:
@@ -61,6 +70,15 @@ spec:
         requests:
           cpu: 250m
           memory: 512Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
     write:
       persistence:
         enabled: true
@@ -72,6 +90,15 @@ spec:
         requests:
           cpu: 250m
           memory: 512Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
     backend:
       resources:
         limits:
