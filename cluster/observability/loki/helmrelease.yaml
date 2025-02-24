@@ -16,6 +16,26 @@ spec:
         namespace: flux-system
       interval: 30m
   values:
+    gateway:
+      replicas: 1
+      affinity: {}
+      podAntiAffinity: {}
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
     loki:
       useTestSchema: true
       storage:
@@ -44,33 +64,6 @@ spec:
     persistence:
       enabled: true
       size: 10Gi
-    gateway:
-      replicas: 1
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/component: gateway
-              topologyKey: kubernetes.io/hostname
-      resources:
-        limits:
-          cpu: 500m
-          memory: 512Mi
-        requests:
-          cpu: 100m
-          memory: 256Mi
-      podAnnotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
-        vault.hashicorp.com/role: "loki"
-        vault.hashicorp.com/agent-inject-template-minio: |
-          {{- with secret "kv/data/storage/minio" -}}
-          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
-          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
-          {{- end -}}
     read:
       resources:
         limits:
