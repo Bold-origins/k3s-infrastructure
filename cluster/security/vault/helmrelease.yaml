@@ -31,6 +31,9 @@ spec:
         enabled: true
       ha:
         enabled: false
+      # Disable the default ingress as we're using our own
+      ingress:
+        enabled: false
       injectors:
         enabled: true
         sidecar:

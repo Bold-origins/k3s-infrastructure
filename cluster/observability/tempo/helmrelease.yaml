@@ -54,19 +54,23 @@ spec:
       capabilities:
         drop:
           - ALL
+    startupProbe:
+      httpGet:
+        path: /ready
+        port: 3100
+      failureThreshold: 30
+      periodSeconds: 10
     livenessProbe:
       httpGet:
         path: /ready
         port: 3100
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 3
+      initialDelaySeconds: 180
+      periodSeconds: 30
+      timeoutSeconds: 1
     readinessProbe:
       httpGet:
         path: /ready
         port: 3100
-      initialDelaySeconds: 15
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 3
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 1
