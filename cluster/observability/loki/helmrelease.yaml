@@ -44,17 +44,6 @@ spec:
     persistence:
       enabled: true
       size: 10Gi
-    write:
-      persistence:
-        enabled: true
-        size: 10Gi
-      resources:
-        limits:
-          cpu: 1000m
-          memory: 1Gi
-        requests:
-          cpu: 250m
-          memory: 512Mi
     gateway:
       affinity: {}
       resources:
@@ -65,6 +54,17 @@ spec:
           cpu: 100m
           memory: 256Mi
     read:
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+    write:
+      persistence:
+        enabled: true
+        size: 10Gi
       resources:
         limits:
           cpu: 1000m
