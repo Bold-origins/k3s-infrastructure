@@ -45,6 +45,6 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: cm-acme-http-solver-rkkch
+            name: cm-acme-http-solver-qhzbv
             port:
               number: 8089 
