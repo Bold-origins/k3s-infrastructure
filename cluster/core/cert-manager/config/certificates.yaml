@@ -7,7 +7,6 @@ spec:
   dnsNames:
   - boldorigins.io
   - grafana.boldorigins.io
-  - vault.boldorigins.io
   - minio.boldorigins.io
   issuerRef:
     kind: ClusterIssuer

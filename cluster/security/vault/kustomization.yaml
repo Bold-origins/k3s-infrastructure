@@ -2,4 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helmrelease.yaml
-  - ingress.yaml 
+  - ingress.yaml
+patches:
+  - patch: |
+      - op: add
+        path: /spec/template/spec/volumes/3/secret/optional
+        value: true
+    target:
+      kind: StatefulSet
+      name: vault 
