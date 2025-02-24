@@ -33,7 +33,7 @@ spec:
           local:
             path: /var/tempo/traces
       server:
-        http_listen_port: 3200
+        http_listen_port: 3100
       distributor:
         receivers:
           otlp:
@@ -49,3 +49,24 @@ spec:
       query_frontend:
         query:
           backend: local
+    containerSecurityContext:
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    livenessProbe:
+      httpGet:
+        path: /ready
+        port: 3100
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 3100
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
