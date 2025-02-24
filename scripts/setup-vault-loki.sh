@@ -22,10 +22,10 @@ TOKEN_REVIEWER_JWT=$(kubectl create token vault -n security)
 
 echo "Setting up Kubernetes authentication configuration..."
 kubectl exec -n security vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" vault write auth/kubernetes/config \
-    token_reviewer_jwt="$TOKEN_REVIEWER_JWT" \
-    kubernetes_host="$KUBERNETES_HOST" \
-    kubernetes_ca_cert="$CA_CERT" \
-    issuer="https://kubernetes.default.svc.cluster.local"
+  token_reviewer_jwt="$TOKEN_REVIEWER_JWT" \
+  kubernetes_host="$KUBERNETES_HOST" \
+  kubernetes_ca_cert="$CA_CERT" \
+  issuer="https://kubernetes.default.svc.cluster.local"
 
 # Create a policy for Loki
 echo "Creating Vault policy for Loki..."
@@ -38,15 +38,15 @@ EOF
 # Create a Kubernetes authentication role for Loki
 echo "Creating Kubernetes authentication role for Loki..."
 kubectl exec -n security vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" vault write auth/kubernetes/role/loki \
-    bound_service_account_names=loki \
-    bound_service_account_namespaces=observability \
-    policies=loki \
-    ttl=1h
+  bound_service_account_names=loki \
+  bound_service_account_namespaces=observability \
+  policies=loki \
+  ttl=1h
 
 # Store MinIO credentials
 echo "Storing MinIO credentials in Vault..."
 kubectl exec -n security vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" vault kv put kv/storage/minio \
-    access_key_id="minio" \
-    secret_access_key="minio123"
+  access_key_id="minio" \
+  secret_access_key="minio123"
 
-echo "Vault setup for Loki completed successfully!" 
+echo "Vault setup for Loki completed successfully!"
