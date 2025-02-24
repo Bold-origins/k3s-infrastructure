@@ -7,7 +7,7 @@ echo "Setting up Vault for Loki..."
 
 # Enable KV secrets engine
 echo "Enabling KV secrets engine..."
-kubectl exec -n security vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" vault secrets enable kv
+kubectl exec -n security vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" vault secrets enable -version=2 kv
 
 # Configure Kubernetes authentication
 echo "Configuring Kubernetes authentication..."

@@ -6,6 +6,15 @@ metadata:
   namespace: observability
 spec:
   interval: 30m
+  timeout: 15m
+  install:
+    timeout: 15m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 3
   chart:
     spec:
       chart: loki
@@ -16,10 +25,36 @@ spec:
         namespace: flux-system
       interval: 30m
   values:
+    loki:
+      auth_enabled: false
+      commonConfig:
+        replication_factor: 1
+        path_prefix: /var/loki
+      storage:
+        type: s3
+        bucketNames:
+          chunks: loki-data
+          ruler: loki-ruler
+          admin: loki-admin
+        s3:
+          endpoint: minio.storage.svc.cluster.local:9000
+          insecure: true
+          bucketnames: loki-data
+          access_key_id: "${ACCESS_KEY_ID}"
+          secret_access_key: "${SECRET_ACCESS_KEY}"
+
+    monitoring:
+      selfMonitoring:
+        enabled: true
+        grafanaAgent:
+          installOperator: false
+      lokiCanary:
+        enabled: true
+    
     gateway:
+      enabled: true
       replicas: 1
       affinity: {}
-      podAntiAffinity: {}
       resources:
         limits:
           cpu: 500m
@@ -31,60 +66,18 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
         vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
         vault.hashicorp.com/agent-inject-template-minio: |
           {{- with secret "kv/data/storage/minio" -}}
           export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
           export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
           {{- end -}}
-    loki:
-      useTestSchema: true
-      storage:
-        type: s3
-        bucketNames:
-          chunks: loki-data
-          ruler: loki-ruler
-          admin: loki-admin
-        s3:
-          endpoint: minio.storage.svc.cluster.local:9000
-          insecure: true
-          bucketnames: loki-data
-          access_key_id: ${ACCESS_KEY_ID}
-          secret_access_key: ${SECRET_ACCESS_KEY}
-      auth_enabled: false
-      commonConfig:
-        replication_factor: 1
-      compactor:
-        shared_store: s3
-    deploymentMode: "simple"
-    monitoring:
-      selfMonitoring:
-        enabled: false
-      lokiCanary:
-        enabled: false
-    persistence:
-      enabled: true
-      size: 10Gi
-    read:
-      resources:
-        limits:
-          cpu: 1000m
-          memory: 1Gi
-        requests:
-          cpu: 250m
-          memory: 512Mi
-      podAnnotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
-        vault.hashicorp.com/role: "loki"
-        vault.hashicorp.com/agent-inject-template-minio: |
-          {{- with secret "kv/data/storage/minio" -}}
-          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
-          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
-          {{- end -}}
+
     write:
+      replicas: 1
       persistence:
-        enabled: true
         size: 10Gi
+        storageClass: local-path
       resources:
         limits:
           cpu: 1000m
@@ -96,12 +89,15 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
         vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
         vault.hashicorp.com/agent-inject-template-minio: |
           {{- with secret "kv/data/storage/minio" -}}
           export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
           export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
           {{- end -}}
-    backend:
+
+    read:
+      replicas: 1
       resources:
         limits:
           cpu: 1000m
@@ -109,3 +105,62 @@ spec:
         requests:
           cpu: 250m
           memory: 512Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
+
+    backend:
+      replicas: 1
+      persistence:
+        size: 10Gi
+        storageClass: local-path
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
+
+    ruler:
+      enabled: true
+      persistence:
+        size: 10Gi
+        storageClass: local-path
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      podAnnotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-minio: "kv/data/storage/minio"
+        vault.hashicorp.com/role: "loki"
+        vault.hashicorp.com/agent-pre-populate-only: "true"
+        vault.hashicorp.com/agent-inject-template-minio: |
+          {{- with secret "kv/data/storage/minio" -}}
+          export ACCESS_KEY_ID="{{ .Data.data.access_key_id }}"
+          export SECRET_ACCESS_KEY="{{ .Data.data.secret_access_key }}"
+          {{- end -}}
+
+    test:
+      enabled: false
