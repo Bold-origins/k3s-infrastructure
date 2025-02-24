@@ -45,6 +45,7 @@ spec:
       enabled: true
       size: 10Gi
     gateway:
+      replicas: 1
       affinity: {}
       resources:
         limits:
