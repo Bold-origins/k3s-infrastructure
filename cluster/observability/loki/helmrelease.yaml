@@ -46,7 +46,15 @@ spec:
       size: 10Gi
     gateway:
       replicas: 1
-      affinity: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: gateway
+              topologyKey: kubernetes.io/hostname
       resources:
         limits:
           cpu: 500m
