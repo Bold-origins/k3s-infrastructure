@@ -35,7 +35,7 @@ spec:
     controller:
       service:
         enabled: true
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
         type: LoadBalancer
       extraArgs:
         enable-ssl-passthrough: true
