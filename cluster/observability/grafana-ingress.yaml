@@ -6,6 +6,8 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
 spec:
   ingressClassName: nginx
   tls:
@@ -22,4 +24,27 @@ spec:
               service:
                 name: kube-prometheus-stack-grafana
                 port:
-                  number: 80 
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-acme
+  namespace: observability
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.boldorigins.io
+      http:
+        paths:
+          - path: /.well-known/acme-challenge
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cm-acme-http-solver-h7thh
+                port:
+                  number: 8089 

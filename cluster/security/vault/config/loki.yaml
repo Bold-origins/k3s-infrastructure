@@ -1,0 +1,49 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: loki
+  namespace: observability
+spec:
+  address: http://vault.security.svc:8200
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: loki
+  namespace: observability
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: loki
+    serviceAccount: loki
+    tokenAudiences:
+      - vault
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: loki-minio
+  namespace: observability
+spec:
+  type: kv-v2
+  mount: kv
+  path: storage/minio
+  destination:
+    create: true
+    name: loki-minio
+  refreshAfter: 1h
+  vaultAuthRef: loki
+---
+apiVersion: vault.hashicorp.com/v1alpha1
+kind: VaultPolicy
+metadata:
+  name: loki
+  namespace: observability
+spec:
+  vaultRef:
+    name: vault
+  policy: |
+    path "kv/data/storage/minio" {
+      capabilities = ["read"]
+    } 
