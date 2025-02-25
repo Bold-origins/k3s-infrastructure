@@ -13,20 +13,9 @@ spec:
   tls:
     - hosts:
         - minio.boldorigins.io
-        - console.minio.boldorigins.io
       secretName: minio-tls
   rules:
     - host: minio.boldorigins.io
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: minio
-                port:
-                  number: 9000
-    - host: console.minio.boldorigins.io
       http:
         paths:
           - path: /
