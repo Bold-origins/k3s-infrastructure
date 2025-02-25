@@ -194,7 +194,8 @@ metadata:
 ---
 apiVersion: v1
 data:
-  nginx.conf: "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile
+  nginx.conf:
+    "worker_processes  5;  ## Default: 1\nerror_log  /dev/stderr;\npid        /tmp/nginx.pid;\nworker_rlimit_nofile
     8192;\n\nevents {\n  worker_connections  4096;  ## Default: 1024\n}\n\nhttp {\n
     \ client_body_temp_path /tmp/client_temp;\n  proxy_temp_path       /tmp/proxy_temp_path;\n
     \ fastcgi_temp_path     /tmp/fastcgi_temp;\n  uwsgi_temp_path       /tmp/uwsgi_temp;\n
@@ -284,15 +285,15 @@ metadata:
     helm.toolkit.fluxcd.io/namespace: observability
   name: loki-clusterrole
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  - secrets
-  verbs:
-  - get
-  - watch
-  - list
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - watch
+      - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -310,9 +311,9 @@ roleRef:
   kind: ClusterRole
   name: loki-clusterrole
 subjects:
-- kind: ServiceAccount
-  name: loki
-  namespace: observability
+  - kind: ServiceAccount
+    name: loki
+    namespace: observability
 ---
 apiVersion: v1
 kind: Service
@@ -331,12 +332,12 @@ metadata:
 spec:
   clusterIP: None
   ports:
-  - name: memcached-client
-    port: 11211
-    targetPort: 11211
-  - name: http-metrics
-    port: 9150
-    targetPort: 9150
+    - name: memcached-client
+      port: 11211
+      targetPort: 11211
+    - name: http-metrics
+      port: 9150
+      targetPort: 9150
   selector:
     app.kubernetes.io/component: memcached-chunks-cache
     app.kubernetes.io/instance: loki
@@ -360,10 +361,10 @@ metadata:
   namespace: observability
 spec:
   ports:
-  - name: http-metrics
-    port: 80
-    protocol: TCP
-    targetPort: http-metrics
+    - name: http-metrics
+      port: 80
+      protocol: TCP
+      targetPort: http-metrics
   selector:
     app.kubernetes.io/component: gateway
     app.kubernetes.io/instance: loki
@@ -386,10 +387,10 @@ metadata:
   namespace: observability
 spec:
   ports:
-  - name: http-metrics
-    port: 3500
-    protocol: TCP
-    targetPort: http-metrics
+    - name: http-metrics
+      port: 3500
+      protocol: TCP
+      targetPort: http-metrics
   selector:
     app.kubernetes.io/component: canary
     app.kubernetes.io/instance: loki
@@ -413,12 +414,12 @@ metadata:
 spec:
   clusterIP: None
   ports:
-  - name: memcached-client
-    port: 11211
-    targetPort: 11211
-  - name: http-metrics
-    port: 9150
-    targetPort: 9150
+    - name: memcached-client
+      port: 11211
+      targetPort: 11211
+    - name: http-metrics
+      port: 9150
+      targetPort: 9150
   selector:
     app.kubernetes.io/component: memcached-results-cache
     app.kubernetes.io/instance: loki
@@ -441,10 +442,10 @@ metadata:
 spec:
   clusterIP: None
   ports:
-  - name: tcp
-    port: 7946
-    protocol: TCP
-    targetPort: http-memberlist
+    - name: tcp
+      port: 7946
+      protocol: TCP
+      targetPort: http-memberlist
   selector:
     app.kubernetes.io/instance: loki
     app.kubernetes.io/name: loki
@@ -478,36 +479,36 @@ spec:
         app.kubernetes.io/name: loki
     spec:
       containers:
-      - args:
-        - -addr=loki-gateway.observability.svc.cluster.local.:80
-        - -labelname=pod
-        - -labelvalue=$(POD_NAME)
-        - -push=true
-        env:
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        image: docker.io/grafana/loki-canary:3.4.2
-        imagePullPolicy: IfNotPresent
-        name: loki-canary
-        ports:
-        - containerPort: 3500
-          name: http-metrics
-          protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /metrics
-            port: http-metrics
-          initialDelaySeconds: 15
-          timeoutSeconds: 1
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-        volumeMounts: null
+        - args:
+            - -addr=loki-gateway.observability.svc.cluster.local.:80
+            - -labelname=pod
+            - -labelvalue=$(POD_NAME)
+            - -push=true
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          image: docker.io/grafana/loki-canary:3.4.2
+          imagePullPolicy: IfNotPresent
+          name: loki-canary
+          ports:
+            - containerPort: 3500
+              name: http-metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http-metrics
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts: null
       securityContext:
         fsGroup: 10001
         runAsGroup: 10001
@@ -563,44 +564,44 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels:
-                app.kubernetes.io/component: gateway
-            topologyKey: kubernetes.io/hostname
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: gateway
+              topologyKey: kubernetes.io/hostname
       containers:
-      - image: docker.io/nginxinc/nginx-unprivileged:1.27-alpine
-        imagePullPolicy: IfNotPresent
-        name: nginx
-        ports:
-        - containerPort: 8080
-          name: http-metrics
-          protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http-metrics
-          initialDelaySeconds: 15
-          timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 100m
-            memory: 256Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-        volumeMounts:
-        - mountPath: /etc/nginx
-          name: config
-        - mountPath: /tmp
-          name: tmp
-        - mountPath: /docker-entrypoint.d
-          name: docker-entrypoint-d-override
+        - image: docker.io/nginxinc/nginx-unprivileged:1.27-alpine
+          imagePullPolicy: IfNotPresent
+          name: nginx
+          ports:
+            - containerPort: 8080
+              name: http-metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-metrics
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /etc/nginx
+              name: config
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /docker-entrypoint.d
+              name: docker-entrypoint-d-override
       enableServiceLinks: true
       securityContext:
         fsGroup: 101
@@ -610,13 +611,13 @@ spec:
       serviceAccountName: loki
       terminationGracePeriodSeconds: 30
       volumes:
-      - configMap:
-          name: loki-gateway
-        name: config
-      - emptyDir: {}
-        name: tmp
-      - emptyDir: {}
-        name: docker-entrypoint-d-override
+        - configMap:
+            name: loki-gateway
+          name: config
+        - emptyDir: {}
+          name: tmp
+        - emptyDir: {}
+          name: docker-entrypoint-d-override
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -654,51 +655,51 @@ spec:
     spec:
       affinity: {}
       containers:
-      - args:
-        - -m 8192
-        - --extended=modern,track_sizes
-        - -I 5m
-        - -c 16384
-        - -v
-        - -u 11211
-        env: null
-        envFrom: null
-        image: memcached:1.6.36-alpine
-        imagePullPolicy: IfNotPresent
-        name: memcached
-        ports:
-        - containerPort: 11211
-          name: client
-        resources:
-          limits:
-            memory: 9830Mi
-          requests:
-            cpu: 500m
-            memory: 9830Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-      - args:
-        - --memcached.address=localhost:11211
-        - --web.listen-address=0.0.0.0:9150
-        image: prom/memcached-exporter:v0.15.0
-        imagePullPolicy: IfNotPresent
-        name: exporter
-        ports:
-        - containerPort: 9150
-          name: http-metrics
-        resources:
-          limits: {}
-          requests: {}
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
+        - args:
+            - -m 8192
+            - --extended=modern,track_sizes
+            - -I 5m
+            - -c 16384
+            - -v
+            - -u 11211
+          env: null
+          envFrom: null
+          image: memcached:1.6.36-alpine
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+            - containerPort: 11211
+              name: client
+          resources:
+            limits:
+              memory: 9830Mi
+            requests:
+              cpu: 500m
+              memory: 9830Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+        - args:
+            - --memcached.address=localhost:11211
+            - --web.listen-address=0.0.0.0:9150
+          image: prom/memcached-exporter:v0.15.0
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+            - containerPort: 9150
+              name: http-metrics
+          resources:
+            limits: {}
+            requests: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
       initContainers: []
       nodeSelector: {}
       securityContext:
@@ -749,51 +750,51 @@ spec:
     spec:
       affinity: {}
       containers:
-      - args:
-        - -m 1024
-        - --extended=modern,track_sizes
-        - -I 5m
-        - -c 16384
-        - -v
-        - -u 11211
-        env: null
-        envFrom: null
-        image: memcached:1.6.36-alpine
-        imagePullPolicy: IfNotPresent
-        name: memcached
-        ports:
-        - containerPort: 11211
-          name: client
-        resources:
-          limits:
-            memory: 1229Mi
-          requests:
-            cpu: 500m
-            memory: 1229Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-      - args:
-        - --memcached.address=localhost:11211
-        - --web.listen-address=0.0.0.0:9150
-        image: prom/memcached-exporter:v0.15.0
-        imagePullPolicy: IfNotPresent
-        name: exporter
-        ports:
-        - containerPort: 9150
-          name: http-metrics
-        resources:
-          limits: {}
-          requests: {}
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
+        - args:
+            - -m 1024
+            - --extended=modern,track_sizes
+            - -I 5m
+            - -c 16384
+            - -v
+            - -u 11211
+          env: null
+          envFrom: null
+          image: memcached:1.6.36-alpine
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+            - containerPort: 11211
+              name: client
+          resources:
+            limits:
+              memory: 1229Mi
+            requests:
+              cpu: 500m
+              memory: 1229Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+        - args:
+            - --memcached.address=localhost:11211
+            - --web.listen-address=0.0.0.0:9150
+          image: prom/memcached-exporter:v0.15.0
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+            - containerPort: 9150
+              name: http-metrics
+          resources:
+            limits: {}
+            requests: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
       initContainers: []
       nodeSelector: {}
       securityContext:
@@ -807,4 +808,3 @@ spec:
       topologySpreadConstraints: []
   updateStrategy:
     type: RollingUpdate
-

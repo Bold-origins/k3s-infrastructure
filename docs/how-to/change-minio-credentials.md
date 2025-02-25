@@ -14,6 +14,7 @@ This guide explains how to safely change MinIO credentials in our k3s infrastruc
 1. **Generate New Credentials**
 
    Choose your new credentials. For example:
+
    ```bash
    NEW_USER="your-new-username"
    NEW_PASS="your-new-secure-password"
@@ -22,6 +23,7 @@ This guide explains how to safely change MinIO credentials in our k3s infrastruc
 2. **Create New SealedSecrets**
 
    Create both the admin and UI credentials SealedSecrets:
+
    ```bash
    # Create MinIO admin credentials SealedSecret
    kubectl create secret generic minio-credentials \
@@ -57,6 +59,7 @@ This guide explains how to safely change MinIO credentials in our k3s infrastruc
 5. **Verify Changes**
 
    Wait for the MinIO pod to restart and verify:
+
    ```bash
    # Watch for pod restart
    kubectl get pods -n storage -l app=minio -w
@@ -76,16 +79,19 @@ This guide explains how to safely change MinIO credentials in our k3s infrastruc
 If you encounter issues:
 
 1. Check the MinIO pod logs:
+
    ```bash
    kubectl logs -n storage -l app=minio
    ```
 
 2. Verify the secrets were properly created:
+
    ```bash
    kubectl get secrets -n storage
    ```
 
 3. Check the MinIO pod environment variables:
+
    ```bash
    kubectl exec -n storage $(kubectl get pods -n storage -l app=minio -o name) -- env | grep -i minio
    ```
@@ -95,4 +101,4 @@ If you encounter issues:
 - Store the new credentials securely
 - Update any backup of infrastructure code
 - Consider rotating credentials regularly as part of security practice
-- Update any CI/CD systems that might be using these credentials 
+- Update any CI/CD systems that might be using these credentials

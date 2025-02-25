@@ -15,9 +15,12 @@ show_help() {
 # Parse arguments
 while getopts "o:h" opt; do
     case $opt in
-        o) FORMAT="$OPTARG";;
-        h) show_help;;
-        \?) echo "Invalid option -$OPTARG" >&2; exit 1;;
+    o) FORMAT="$OPTARG" ;;
+    h) show_help ;;
+    \?)
+        echo "Invalid option -$OPTARG" >&2
+        exit 1
+        ;;
     esac
 done
 
@@ -34,37 +37,37 @@ declare -A NS_PURPOSES=(
 )
 
 case "$FORMAT" in
-    json)
-        echo "{"
-        echo "  \"namespaces\": ["
-        first=true
-        kubectl get ns -o json | jq -r '.items[] | .metadata.name' | while read -r ns; do
-            if [ "$first" = true ]; then
-                first=false
-            else
-                echo ","
-            fi
-            purpose="${NS_PURPOSES[$ns]:-"User namespace"}"
-            echo "    {"
-            echo "      \"name\": \"$ns\","
-            echo "      \"purpose\": \"$purpose\","
-            echo "      \"status\": \"$(kubectl get ns "$ns" -o jsonpath='{.status.phase}')\""
-            echo -n "    }"
-        done
-        echo
-        echo "  ]"
-        echo "}"
-        ;;
-    *)
-        # Print header
-        printf "%-20s %-50s %-10s\n" "NAMESPACE" "PURPOSE" "STATUS"
-        echo "--------------------------------------------------------------------------------"
-        
-        # List all namespaces with their purposes
-        kubectl get ns -o json | jq -r '.items[] | [.metadata.name, .status.phase] | @tsv' | \
+json)
+    echo "{"
+    echo "  \"namespaces\": ["
+    first=true
+    kubectl get ns -o json | jq -r '.items[] | .metadata.name' | while read -r ns; do
+        if [ "$first" = true ]; then
+            first=false
+        else
+            echo ","
+        fi
+        purpose="${NS_PURPOSES[$ns]:-"User namespace"}"
+        echo "    {"
+        echo "      \"name\": \"$ns\","
+        echo "      \"purpose\": \"$purpose\","
+        echo "      \"status\": \"$(kubectl get ns "$ns" -o jsonpath='{.status.phase}')\""
+        echo -n "    }"
+    done
+    echo
+    echo "  ]"
+    echo "}"
+    ;;
+*)
+    # Print header
+    printf "%-20s %-50s %-10s\n" "NAMESPACE" "PURPOSE" "STATUS"
+    echo "--------------------------------------------------------------------------------"
+
+    # List all namespaces with their purposes
+    kubectl get ns -o json | jq -r '.items[] | [.metadata.name, .status.phase] | @tsv' |
         while IFS=$'\t' read -r ns status; do
             purpose="${NS_PURPOSES[$ns]:-"User namespace"}"
             printf "%-20s %-50s %-10s\n" "$ns" "$purpose" "$status"
         done
-        ;;
-esac 
+    ;;
+esac

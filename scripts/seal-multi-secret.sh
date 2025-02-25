@@ -20,12 +20,15 @@ show_help() {
 # Parse arguments
 while getopts "n:s:f:o:h" opt; do
     case $opt in
-        n) NAMESPACE="$OPTARG";;
-        s) SECRET_NAME="$OPTARG";;
-        f) VALUES_FILE="$OPTARG";;
-        o) OUTPUT_FILE="$OPTARG";;
-        h) show_help;;
-        \?) echo "Invalid option -$OPTARG" >&2; exit 1;;
+    n) NAMESPACE="$OPTARG" ;;
+    s) SECRET_NAME="$OPTARG" ;;
+    f) VALUES_FILE="$OPTARG" ;;
+    o) OUTPUT_FILE="$OPTARG" ;;
+    h) show_help ;;
+    \?)
+        echo "Invalid option -$OPTARG" >&2
+        exit 1
+        ;;
     esac
 done
 
@@ -48,7 +51,7 @@ OUTPUT_FILE=${OUTPUT_FILE:-sealed-secret.yaml}
 TEMP_FILE=$(mktemp)
 
 # Start writing the secret YAML
-cat > "$TEMP_FILE" << EOF
+cat >"$TEMP_FILE" <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
@@ -62,21 +65,21 @@ EOF
 while IFS='=' read -r key value; do
     # Skip empty lines and comments
     [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
-    
+
     # Remove any leading/trailing whitespace
     key=$(echo "$key" | xargs)
     value=$(echo "$value" | xargs)
-    
+
     # Add the key-value pair to the YAML
-    echo "  $key: $value" >> "$TEMP_FILE"
-done < "$VALUES_FILE"
+    echo "  $key: $value" >>"$TEMP_FILE"
+done <"$VALUES_FILE"
 
 # Create output directory if it doesn't exist
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 # Seal the secret
 echo "Sealing secret '$SECRET_NAME' in namespace '$NAMESPACE'..."
-if ! kubeseal --format yaml --controller-namespace=infra --controller-name=sealed-secrets < "$TEMP_FILE" > "$OUTPUT_FILE"; then
+if ! kubeseal --format yaml --controller-namespace=infra --controller-name=sealed-secrets <"$TEMP_FILE" >"$OUTPUT_FILE"; then
     echo "Error: Failed to seal secret"
     rm "$TEMP_FILE"
     exit 1
@@ -85,4 +88,4 @@ fi
 # Clean up
 rm "$TEMP_FILE"
 
-echo "Secret sealed successfully and saved to $OUTPUT_FILE" 
+echo "Secret sealed successfully and saved to $OUTPUT_FILE"

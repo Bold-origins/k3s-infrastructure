@@ -13,21 +13,21 @@ This directory contains scripts to help manage secrets in the k3s infrastructure
 
 1. Copy the example credentials file:
 
-```bash
-cp ui-credentials.txt.example ui-credentials.txt
-```
+   ```bash
+   cp ui-credentials.txt.example ui-credentials.txt
+   ```
 
 2. Edit the credentials file with your actual values:
 
-```bash
-vim ui-credentials.txt
-```
+   ```bash
+   vim ui-credentials.txt
+   ```
 
 3. Set required environment variables:
 
-```bash
-export VAULT_TOKEN='your-vault-token'
-```
+   ```bash
+   export VAULT_TOKEN='your-vault-token'
+   ```
 
 ## Available Scripts
 
@@ -46,12 +46,12 @@ chmod +x list-namespaces.sh
 ./list-namespaces.sh -o json
 ```
 
-Options:
+**Options:**
 
 - `-o`: Output format: text (default) or json
 - `-h`: Show help message
 
-Key Namespaces:
+**Key Namespaces:**
 
 - `infra`: Core infrastructure (cert-manager, ingress-nginx, sealed-secrets)
 - `observability`: Monitoring stack (Prometheus, Grafana, Loki)
@@ -72,7 +72,7 @@ chmod +x seal-secret.sh
 ./seal-secret.sh -n my-namespace -s my-secret -k password -v mysecret -f output.yaml
 ```
 
-Options:
+**Options:**
 
 - `-n`: Namespace for the secret (required)
 - `-s`: Secret name (required)
@@ -100,7 +100,7 @@ EOF
 ./seal-multi-secret.sh -n my-namespace -s my-secret -f values.txt -o output.yaml
 ```
 
-Options:
+**Options:**
 
 - `-n`: Namespace for the secret (required)
 - `-s`: Secret name (required)
@@ -126,7 +126,7 @@ chmod +x get-secret.sh
 ./get-secret.sh -n my-namespace -s my-secret -o json
 ```
 
-Options:
+**Options:**
 
 - `-n`: Namespace of the secret (required)
 - `-s`: Secret name (required)
@@ -155,7 +155,7 @@ chmod +x list-secrets.sh
 ./list-secrets.sh -n my-namespace -o json
 ```
 
-Options:
+**Options:**
 
 - `-n`: Namespace to list secrets from (optional, defaults to all namespaces)
 - `-t`: Filter by secret type (optional)
@@ -180,18 +180,18 @@ export VAULT_TOKEN='your-vault-token'
 ./store-ui-credentials.sh -f my-credentials.txt
 ```
 
-Options:
+**Options:**
 
 - `-f`: Credentials file (optional, defaults to scripts/ui-credentials.txt)
 - `-h`: Show help message
 
-Required Environment Variables:
+**Required Environment Variables:**
 
 - `VAULT_TOKEN`: Vault root token for authentication
 
 ## Examples
 
-1. Create and retrieve a basic secret:
+### 1. Create and retrieve a basic secret
 
 ```bash
 # List available namespaces
@@ -204,7 +204,7 @@ Required Environment Variables:
 ./get-secret.sh -n observability -s grafana-creds -k admin-password
 ```
 
-2. Create and list multi-key secrets:
+### 2. Create and list multi-key secrets
 
 ```bash
 # Create values file
@@ -225,15 +225,15 @@ EOF
 ./get-secret.sh -n storage -s db-credentials -o json
 ```
 
-3. Work with different secret types:
+### 3. Work with different secret types
 
-    ```bash
-    # List all TLS secrets
-    ./list-secrets.sh -t kubernetes.io/tls -o wide
+```bash
+# List all TLS secrets
+./list-secrets.sh -t kubernetes.io/tls -o wide
 
-    # List all secrets in JSON format
-    ./list-secrets.sh -o json
-    ```
+# List all secrets in JSON format
+./list-secrets.sh -o json
+```
 
 ## Notes
 

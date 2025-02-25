@@ -21,13 +21,16 @@ show_help() {
 # Parse arguments
 while getopts "n:s:k:v:f:h" opt; do
     case $opt in
-        n) NAMESPACE="$OPTARG";;
-        s) SECRET_NAME="$OPTARG";;
-        k) KEY="$OPTARG";;
-        v) VALUE="$OPTARG";;
-        f) OUTPUT_FILE="$OPTARG";;
-        h) show_help;;
-        \?) echo "Invalid option -$OPTARG" >&2; exit 1;;
+    n) NAMESPACE="$OPTARG" ;;
+    s) SECRET_NAME="$OPTARG" ;;
+    k) KEY="$OPTARG" ;;
+    v) VALUE="$OPTARG" ;;
+    f) OUTPUT_FILE="$OPTARG" ;;
+    h) show_help ;;
+    \?)
+        echo "Invalid option -$OPTARG" >&2
+        exit 1
+        ;;
     esac
 done
 
@@ -44,7 +47,7 @@ OUTPUT_FILE=${OUTPUT_FILE:-sealed-secret.yaml}
 TEMP_FILE=$(mktemp)
 
 # Create the secret YAML
-cat > "$TEMP_FILE" << EOF
+cat >"$TEMP_FILE" <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
@@ -60,7 +63,7 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 # Seal the secret
 echo "Sealing secret '$SECRET_NAME' in namespace '$NAMESPACE'..."
-if ! kubeseal --format yaml --controller-namespace=infra --controller-name=sealed-secrets < "$TEMP_FILE" > "$OUTPUT_FILE"; then
+if ! kubeseal --format yaml --controller-namespace=infra --controller-name=sealed-secrets <"$TEMP_FILE" >"$OUTPUT_FILE"; then
     echo "Error: Failed to seal secret"
     rm "$TEMP_FILE"
     exit 1
@@ -69,4 +72,4 @@ fi
 # Clean up
 rm "$TEMP_FILE"
 
-echo "Secret sealed successfully and saved to $OUTPUT_FILE" 
+echo "Secret sealed successfully and saved to $OUTPUT_FILE"

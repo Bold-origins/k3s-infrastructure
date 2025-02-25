@@ -18,9 +18,12 @@ show_help() {
 # Parse arguments
 while getopts "f:h" opt; do
     case $opt in
-        f) CREDS_FILE="$OPTARG";;
-        h) show_help;;
-        \?) echo "Invalid option -$OPTARG" >&2; exit 1;;
+    f) CREDS_FILE="$OPTARG" ;;
+    h) show_help ;;
+    \?)
+        echo "Invalid option -$OPTARG" >&2
+        exit 1
+        ;;
     esac
 done
 
@@ -34,7 +37,7 @@ fi
 CREDS_FILE=${CREDS_FILE:-"scripts/ui-credentials.txt"}
 
 # Get the directory where the script is located
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # If CREDS_FILE is a relative path and file doesn't exist, try looking relative to SCRIPT_DIR
 if [[ ! -f "$CREDS_FILE" && ! "$CREDS_FILE" =~ ^/ ]]; then
@@ -54,8 +57,8 @@ echo "Creating sealed secrets..."
 extract_credentials() {
     local prefix="$1"
     local tempfile=$(mktemp)
-    
-    grep "^${prefix}_" "$CREDS_FILE" > "$tempfile"
+
+    grep "^${prefix}_" "$CREDS_FILE" >"$tempfile"
     echo "$tempfile"
 }
 
@@ -85,17 +88,17 @@ echo "Sealed secrets created successfully!"
 # Store in Vault (if Vault is available)
 if kubectl -n security get pod vault-0 &>/dev/null; then
     echo "Storing credentials in Vault..."
-    
+
     # Check if Vault port-forward is running
     if ! nc -z localhost 8200 2>/dev/null; then
         echo "Starting Vault port-forward..."
         kubectl -n security port-forward svc/vault 8200:8200 &
         sleep 2
     fi
-    
+
     # Set Vault address
     export VAULT_ADDR='http://127.0.0.1:8200'
-    
+
     # Function to create JSON for a specific service
     create_service_json() {
         local prefix="$1"
@@ -103,29 +106,29 @@ if kubectl -n security get pod vault-0 &>/dev/null; then
         while IFS='=' read -r key value; do
             # Skip empty lines and comments
             [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
-            
+
             # Only process keys with the correct prefix
             [[ "$key" != ${prefix}_* ]] && continue
-            
+
             # Remove prefix from key
             local short_key=${key#${prefix}_}
-            
+
             # Remove any leading/trailing whitespace
             value=$(echo "$value" | xargs)
-            
+
             # Add to JSON
             json_data="$json_data\"$short_key\":\"$value\","
-        done < "$CREDS_FILE"
+        done <"$CREDS_FILE"
         json_data="${json_data%,}}"
         echo "$json_data"
     }
-    
+
     # Enable KV secrets engine if not already enabled
     echo "Enabling KV secrets engine..."
     curl -s -X POST -H "X-Vault-Token: $VAULT_TOKEN" \
         -d '{"type": "kv", "options": {"version": "2"}}' \
         http://127.0.0.1:8200/v1/sys/mounts/kv || true
-    
+
     # Store credentials for each service in its own path
     echo "Storing Grafana credentials..."
     grafana_json=$(create_service_json "grafana")
@@ -133,21 +136,21 @@ if kubectl -n security get pod vault-0 &>/dev/null; then
         -H "Content-Type: application/json" \
         -d "{\"data\":$grafana_json}" \
         http://127.0.0.1:8200/v1/kv/data/ui/grafana
-    
+
     echo "Storing MinIO credentials..."
     minio_json=$(create_service_json "minio")
     echo "$minio_json" | curl -s -X POST -H "X-Vault-Token: $VAULT_TOKEN" \
         -H "Content-Type: application/json" \
         -d "{\"data\":$minio_json}" \
         http://127.0.0.1:8200/v1/kv/data/ui/minio
-    
+
     echo "Storing Vault credentials..."
     vault_json=$(create_service_json "vault")
     echo "$vault_json" | curl -s -X POST -H "X-Vault-Token: $VAULT_TOKEN" \
         -H "Content-Type: application/json" \
         -d "{\"data\":$vault_json}" \
         http://127.0.0.1:8200/v1/kv/data/ui/vault
-    
+
     echo "Credentials stored in Vault successfully!"
     echo
     echo "You can retrieve credentials from Vault using:"
@@ -158,4 +161,4 @@ else
     echo "Warning: Vault is not available. Credentials were only stored as sealed secrets."
 fi
 
-echo "Done! UI credentials have been stored securely." 
+echo "Done! UI credentials have been stored securely."

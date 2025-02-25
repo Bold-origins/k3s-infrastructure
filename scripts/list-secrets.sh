@@ -17,11 +17,14 @@ show_help() {
 # Parse arguments
 while getopts "n:t:o:h" opt; do
     case $opt in
-        n) NAMESPACE="$OPTARG";;
-        t) TYPE="$OPTARG";;
-        o) FORMAT="$OPTARG";;
-        h) show_help;;
-        \?) echo "Invalid option -$OPTARG" >&2; exit 1;;
+    n) NAMESPACE="$OPTARG" ;;
+    t) TYPE="$OPTARG" ;;
+    o) FORMAT="$OPTARG" ;;
+    h) show_help ;;
+    \?)
+        echo "Invalid option -$OPTARG" >&2
+        exit 1
+        ;;
     esac
 done
 
@@ -39,13 +42,13 @@ fi
 get_secrets_json() {
     local ns_flag="$1"
     local type_selector=""
-    
+
     if [ -n "$TYPE" ]; then
         type_selector="--field-selector type=$TYPE"
     fi
-    
-    kubectl get secrets $ns_flag $type_selector -o json | \
-    jq '.items[] | {
+
+    kubectl get secrets $ns_flag $type_selector -o json |
+        jq '.items[] | {
         namespace: .metadata.namespace,
         name: .metadata.name,
         type: .type,
@@ -62,30 +65,30 @@ format_timestamp() {
 }
 
 case "$FORMAT" in
-    json)
-        get_secrets_json "$NS_FLAG"
-        ;;
-    wide)
-        # Header
-        printf "%-20s %-30s %-15s %-20s %-30s\n" "NAMESPACE" "NAME" "TYPE" "CREATED" "KEYS"
-        echo "--------------------------------------------------------------------------------------------------------"
-        
-        # Get and format data
-        kubectl get secrets $NS_FLAG -o json | \
+json)
+    get_secrets_json "$NS_FLAG"
+    ;;
+wide)
+    # Header
+    printf "%-20s %-30s %-15s %-20s %-30s\n" "NAMESPACE" "NAME" "TYPE" "CREATED" "KEYS"
+    echo "--------------------------------------------------------------------------------------------------------"
+
+    # Get and format data
+    kubectl get secrets $NS_FLAG -o json |
         jq -r '.items[] | select((.type == env.TYPE) or (env.TYPE == "")) |
             [.metadata.namespace, .metadata.name, .type, .metadata.creationTimestamp, (.data | keys | join(","))] |
-            @tsv' | \
+            @tsv' |
         while IFS=$'\t' read -r namespace name type created keys; do
             created_fmt=$(format_timestamp "$created")
             printf "%-20s %-30s %-15s %-20s %-30s\n" "$namespace" "$name" "$type" "$created_fmt" "$keys"
         done
-        ;;
-    *)
-        # Default text format
-        if [ -n "$TYPE" ]; then
-            kubectl get secrets $NS_FLAG --field-selector type=$TYPE
-        else
-            kubectl get secrets $NS_FLAG
-        fi
-        ;;
-esac 
+    ;;
+*)
+    # Default text format
+    if [ -n "$TYPE" ]; then
+        kubectl get secrets $NS_FLAG --field-selector type=$TYPE
+    else
+        kubectl get secrets $NS_FLAG
+    fi
+    ;;
+esac

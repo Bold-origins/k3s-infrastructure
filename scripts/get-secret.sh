@@ -20,12 +20,15 @@ show_help() {
 # Parse arguments
 while getopts "n:s:k:o:h" opt; do
     case $opt in
-        n) NAMESPACE="$OPTARG";;
-        s) SECRET_NAME="$OPTARG";;
-        k) KEY="$OPTARG";;
-        o) FORMAT="$OPTARG";;
-        h) show_help;;
-        \?) echo "Invalid option -$OPTARG" >&2; exit 1;;
+    n) NAMESPACE="$OPTARG" ;;
+    s) SECRET_NAME="$OPTARG" ;;
+    k) KEY="$OPTARG" ;;
+    o) FORMAT="$OPTARG" ;;
+    h) show_help ;;
+    \?)
+        echo "Invalid option -$OPTARG" >&2
+        exit 1
+        ;;
     esac
 done
 
@@ -39,7 +42,7 @@ fi
 FORMAT=${FORMAT:-text}
 
 # Check if secret exists
-if ! kubectl get secret -n "$NAMESPACE" "$SECRET_NAME" &> /dev/null; then
+if ! kubectl get secret -n "$NAMESPACE" "$SECRET_NAME" &>/dev/null; then
     echo "Error: Secret '$SECRET_NAME' not found in namespace '$NAMESPACE'"
     exit 1
 fi
@@ -57,7 +60,7 @@ if [ -n "$KEY" ]; then
         echo "Error: Key '$KEY' not found in secret"
         exit 1
     fi
-    
+
     if [ "$FORMAT" = "json" ]; then
         echo "{"
         echo "  \"$KEY\": \"$(decode_base64 "$VALUE")\""
@@ -69,12 +72,12 @@ else
     # Get all keys and values
     if [ "$FORMAT" = "json" ]; then
         echo "{"
-        kubectl get secret -n "$NAMESPACE" "$SECRET_NAME" -o json | \
-        jq -r '.data | to_entries | .[] | "\(.key)": "\(.value | @base64d)"' | \
-        sed 's/^/  /'
+        kubectl get secret -n "$NAMESPACE" "$SECRET_NAME" -o json |
+            jq -r '.data | to_entries | .[] | "\(.key)": "\(.value | @base64d)"' |
+            sed 's/^/  /'
         echo "}"
     else
-        kubectl get secret -n "$NAMESPACE" "$SECRET_NAME" -o json | \
-        jq -r '.data | to_entries | .[] | "\(.key)=\(.value | @base64d)"'
+        kubectl get secret -n "$NAMESPACE" "$SECRET_NAME" -o json |
+            jq -r '.data | to_entries | .[] | "\(.key)=\(.value | @base64d)"'
     fi
-fi 
+fi
