@@ -23,6 +23,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: minio-console
+                name: minio
                 port:
                   number: 9001
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000
