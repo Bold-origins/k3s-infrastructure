@@ -34,14 +34,14 @@ spec:
     service:
       type: ClusterIP
       ports:
-        api:
+        - name: http
           port: 9000
+          targetPort: 9000
           protocol: TCP
-          name: http
-        console:
+        - name: http-console
           port: 9001
+          targetPort: 9001
           protocol: TCP
-          name: http-console
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
