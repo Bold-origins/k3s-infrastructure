@@ -13,7 +13,7 @@ spec:
   tls:
     - hosts:
         - minio.boldorigins.io
-      secretName: boldorigins-io-tls
+      secretName: minio-tls
   rules:
     - host: minio.boldorigins.io
       http:
