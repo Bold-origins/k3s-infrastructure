@@ -12,16 +12,19 @@ This directory contains scripts to help manage secrets in the k3s infrastructure
 ## Initial Setup
 
 1. Copy the example credentials file:
+
 ```bash
 cp ui-credentials.txt.example ui-credentials.txt
 ```
 
 2. Edit the credentials file with your actual values:
+
 ```bash
 vim ui-credentials.txt
 ```
 
 3. Set required environment variables:
+
 ```bash
 export VAULT_TOKEN='your-vault-token'
 ```
@@ -44,10 +47,12 @@ chmod +x list-namespaces.sh
 ```
 
 Options:
+
 - `-o`: Output format: text (default) or json
 - `-h`: Show help message
 
 Key Namespaces:
+
 - `infra`: Core infrastructure (cert-manager, ingress-nginx, sealed-secrets)
 - `observability`: Monitoring stack (Prometheus, Grafana, Loki)
 - `security`: Security tools (Vault, Falco, Gatekeeper)
@@ -68,6 +73,7 @@ chmod +x seal-secret.sh
 ```
 
 Options:
+
 - `-n`: Namespace for the secret (required)
 - `-s`: Secret name (required)
 - `-k`: Key in the secret (required)
@@ -95,6 +101,7 @@ EOF
 ```
 
 Options:
+
 - `-n`: Namespace for the secret (required)
 - `-s`: Secret name (required)
 - `-f`: File containing key-value pairs (required)
@@ -120,6 +127,7 @@ chmod +x get-secret.sh
 ```
 
 Options:
+
 - `-n`: Namespace of the secret (required)
 - `-s`: Secret name (required)
 - `-k`: Specific key to retrieve (optional)
@@ -148,6 +156,7 @@ chmod +x list-secrets.sh
 ```
 
 Options:
+
 - `-n`: Namespace to list secrets from (optional, defaults to all namespaces)
 - `-t`: Filter by secret type (optional)
 - `-o`: Output format: text, wide, or json (optional, defaults to text)
@@ -172,15 +181,18 @@ export VAULT_TOKEN='your-vault-token'
 ```
 
 Options:
+
 - `-f`: Credentials file (optional, defaults to scripts/ui-credentials.txt)
 - `-h`: Show help message
 
 Required Environment Variables:
+
 - `VAULT_TOKEN`: Vault root token for authentication
 
 ## Examples
 
 1. Create and retrieve a basic secret:
+
 ```bash
 # List available namespaces
 ./list-namespaces.sh
@@ -193,6 +205,7 @@ Required Environment Variables:
 ```
 
 2. Create and list multi-key secrets:
+
 ```bash
 # Create values file
 cat > db-creds.txt << EOF
@@ -213,13 +226,14 @@ EOF
 ```
 
 3. Work with different secret types:
-```bash
-# List all TLS secrets
-./list-secrets.sh -t kubernetes.io/tls -o wide
 
-# List all secrets in JSON format
-./list-secrets.sh -o json
-```
+    ```bash
+    # List all TLS secrets
+    ./list-secrets.sh -t kubernetes.io/tls -o wide
+
+    # List all secrets in JSON format
+    ./list-secrets.sh -o json
+    ```
 
 ## Notes
 
@@ -230,4 +244,4 @@ EOF
 - Use `list-secrets.sh` with caution in production environments as it may expose sensitive information
 - Always check the namespace with `list-namespaces.sh` before creating secrets to ensure proper placement
 - Never commit actual credentials to Git, use the example files as templates
-- Store sensitive environment variables in a secure location (e.g., .env file not tracked by Git) 
+- Store sensitive environment variables in a secure location (e.g., .env file not tracked by Git)
