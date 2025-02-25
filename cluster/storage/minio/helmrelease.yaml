@@ -36,8 +36,12 @@ spec:
       ports:
         api:
           port: 9000
+          protocol: TCP
+          name: http
         console:
           port: 9001
+          protocol: TCP
+          name: http-console
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
