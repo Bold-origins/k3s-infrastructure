@@ -33,6 +33,11 @@ spec:
         memory: 1Gi
     service:
       type: ClusterIP
+      ports:
+        api:
+          port: 9000
+        console:
+          port: 9001
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
