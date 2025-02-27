@@ -27,13 +27,14 @@ spec:
     controller:
       hostNetwork: false
       dnsPolicy: ClusterFirst
+      replicaCount: 2
       config:
         enable-real-ip: 'true'
         proxy-body-size: 100m
         use-forwarded-headers: 'true'
-        proxy-connect-timeout: '180'
-        proxy-read-timeout: '180'
-        proxy-send-timeout: '180'
+        proxy-connect-timeout: '60'
+        proxy-read-timeout: '60'
+        proxy-send-timeout: '60'
       ingressClassResource:
         default: true
         enabled: true
@@ -51,7 +52,7 @@ spec:
           memory: 128Mi
       service:
         enabled: true
-        externalTrafficPolicy: Cluster
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/allow-shared-ip: "true"
         ports:
@@ -69,3 +70,22 @@ spec:
         http: 80
         https: 443
         healthz: 10254
+      podSecurityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsNonRoot: true
+      livenessProbe:
+        failureThreshold: 3
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      readinessProbe:
+        failureThreshold: 3
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1

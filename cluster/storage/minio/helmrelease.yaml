@@ -23,7 +23,7 @@ spec:
       existingSecret: minio-credentials
     persistence:
       enabled: true
-      size: 10Gi
+      size: 50Gi
     resources:
       limits:
         cpu: 1000m
@@ -43,7 +43,8 @@ spec:
           targetPort: 9001
           protocol: TCP
     environment:
-      MINIO_SERVER_URL: "https://minio.boldorigins.io/api"
+      MINIO_SERVER_URL: "https://minio.boldorigins.io"
+      MINIO_BROWSER_REDIRECT_URL: "https://console.minio.boldorigins.io"
       MINIO_BROWSER: "on"
       MINIO_DOMAIN: "minio.boldorigins.io"
     livenessProbe:

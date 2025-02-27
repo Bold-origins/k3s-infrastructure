@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minio
+  name: minio-console
   namespace: storage
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -14,16 +14,16 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - minio.boldorigins.io
-      secretName: minio-tls
+        - console.minio.boldorigins.io
+      secretName: minio-console-tls
   rules:
-    - host: minio.boldorigins.io
+    - host: console.minio.boldorigins.io
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: minio
+                name: minio-console
                 port:
-                  number: 9000
+                  number: 9001 
