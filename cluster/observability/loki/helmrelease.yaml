@@ -31,7 +31,30 @@ spec:
       commonConfig:
         replication_factor: 1
         path_prefix: /var/loki
+      
+      # Define the storage configuration properly
+      storage:
+        bucketNames:
+          chunks: loki-data
+          ruler: loki-ruler
+          admin: loki-admin
+        s3:
+          endpoint: minio.storage.svc.cluster.local:9000
+          insecure: true
+          s3ForcePathStyle: true
+      
+      # Define schema config
+      schemaConfig:
+        configs:
+          - from: 2020-10-24
+            store: boltdb-shipper
+            object_store: aws
+            schema: v11
+            index:
+              prefix: index_
+              period: 24h
 
+    # Configure the single binary mode
     singleBinary:
       enabled: true
       replicas: 1
@@ -51,19 +74,7 @@ spec:
             name: loki-minio-credentials
       serviceAccount: loki
 
-    storage:
-      type: s3
-      s3:
-        endpoint: minio.storage.svc.cluster.local:9000
-        insecure: true
-        bucketnames: loki-data
-        chunks:
-          bucket: loki-data
-        ruler:
-          bucket: loki-ruler
-        admin:
-          bucket: loki-admin
-
+    # Disable unnecessary components
     monitoring:
       selfMonitoring:
         enabled: false
