@@ -105,4 +105,4 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  url: https://supabase-community.github.io/supabase-kubernetes/charts 
+  url: https://supabase-community.github.io/supabase-kubernetes/charts
