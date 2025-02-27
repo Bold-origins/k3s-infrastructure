@@ -25,9 +25,11 @@ spec:
         namespace: flux-system
       interval: 30m
   values:
+    deploymentMode: SingleBinary
+    
     loki:
       auth_enabled: false
-      useTestSchema: true
+      useTestSchema: false
       commonConfig:
         replication_factor: 1
         path_prefix: /var/loki
@@ -48,7 +50,7 @@ spec:
         configs:
           - from: 2020-10-24
             store: boltdb-shipper
-            object_store: aws
+            object_store: s3
             schema: v11
             index:
               prefix: index_
