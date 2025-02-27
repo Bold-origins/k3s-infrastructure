@@ -5,6 +5,7 @@ namespace: flux-system
 resources:
   - gotk-components.yaml
   - gotk-sync.yaml
+  - kustomization-repositories.yaml
   - kustomization-infrastructure-core.yaml
   - kustomization-infrastructure-cert-manager-config.yaml
   - kustomization-infrastructure-security.yaml
