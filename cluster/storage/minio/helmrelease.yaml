@@ -42,6 +42,10 @@ spec:
           port: 9001
           targetPort: 9001
           protocol: TCP
+    environment:
+      MINIO_SERVER_URL: "https://minio.boldorigins.io/api"
+      MINIO_BROWSER: "on"
+      MINIO_DOMAIN: "minio.boldorigins.io"
     livenessProbe:
       httpGet:
         path: /minio/health/live
