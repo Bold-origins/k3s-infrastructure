@@ -25,7 +25,7 @@ spec:
         namespace: flux-system
       interval: 30m
   values:
-    deploymentMode: SingleBinary<->SimpleScalable
+    deploymentMode: SingleBinary
     
     loki:
       auth_enabled: false
@@ -76,15 +76,22 @@ spec:
             name: loki-minio-credentials
       serviceAccount: loki
 
-    # Disable unnecessary components
+    # Disable all other components to avoid conflicts
     monitoring:
       selfMonitoring:
         enabled: false
       lokiCanary:
         enabled: false
-
     test:
       enabled: false
-
     gateway:
+      enabled: false
+    # Disable simple scalable components
+    read:
+      enabled: false
+    write:
+      enabled: false
+    backend:
+      enabled: false
+    canary:
       enabled: false

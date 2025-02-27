@@ -15,16 +15,45 @@ spec:
         name: prometheus-community
         namespace: flux-system
       interval: 12h
-  valuesFrom:
-    - kind: ConfigMap
-      name: kube-prometheus-stack-values
-      valuesKey: values.yaml
   values:
+    prometheus:
+      prometheusSpec:
+        retention: 7d
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: local-path
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
     grafana:
+      persistence:
+        enabled: true
+        storageClassName: local-path
+        size: 5Gi
       dashboardProviders:
-        dashboards:
-          default:
-            enabled: true
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+          - name: 'default'
+            orgId: 1
+            folder: ''
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+      dashboards:
+        default:
+          kubernetes:
+            gnetId: 15757
+            revision: 1
+            datasource: Prometheus
+          security-falco:
+            gnetId: 11915
+            revision: 1
+            datasource: Prometheus
       resources:
         limits:
           cpu: 1000m
@@ -40,9 +69,6 @@ spec:
         runAsUser: 472
         runAsGroup: 472
         fsGroup: 472
-      persistence:
-        enabled: true
-        size: 8Gi
     prometheus:
       prometheusSpec:
         podMetadata:
