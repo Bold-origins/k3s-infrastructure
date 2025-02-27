@@ -9,6 +9,7 @@ This repository contains the GitOps infrastructure configuration for a k3s Kuber
 - **Ingress-Nginx**: Kubernetes ingress controller
 - **Cert-Manager**: Automatic TLS certificate management
 - **Sealed Secrets**: Secure secret management in Git
+- **MetalLB**: Layer 2 load balancer for bare metal Kubernetes clusters
 
 ### Security
 
@@ -27,6 +28,10 @@ This repository contains the GitOps infrastructure configuration for a k3s Kuber
 
 - **MinIO**: S3-compatible object storage
 
+### Application Platform
+
+- **Supabase**: Open-source Firebase alternative with PostgreSQL, Auth, Storage, and more
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -35,6 +40,8 @@ This repository contains the GitOps infrastructure configuration for a k3s Kuber
 - `kubectl` CLI tool
 - `flux` CLI tool
 - `helm` CLI tool (optional)
+- `kubeseal` CLI tool (for secret management)
+- `jq` command-line JSON processor (for some scripts)
 
 ### Initial Setup
 
@@ -55,6 +62,22 @@ flux bootstrap github \
   --path=cluster
 ```
 
+3. Set up secret management:
+
+```bash
+# Copy the example credentials file
+cp scripts/ui-credentials.txt.example scripts/ui-credentials.txt
+
+# Edit the credentials file with your actual values
+vim scripts/ui-credentials.txt
+
+# Set required environment variables
+export VAULT_TOKEN='your-vault-token'
+
+# Store credentials
+./scripts/store-ui-credentials.sh
+```
+
 ### Accessing Services
 
 #### Grafana
@@ -66,7 +89,25 @@ kubectl -n observability port-forward svc/kube-prometheus-stack-grafana 3000:80
 - URL: <http://localhost:3000>
 - Default credentials:
   - Username: admin
-  - Password: supersecret123
+  - Password: See scripts/ui-credentials.txt
+
+#### MinIO Console
+
+```bash
+kubectl -n storage port-forward svc/minio-console 9001:9001
+```
+
+- URL: <http://localhost:9001>
+- Default credentials: See scripts/ui-credentials.txt
+
+#### Supabase Studio
+
+```bash
+kubectl -n supabase port-forward svc/supabase-studio 3001:3000
+```
+
+- URL: <http://localhost:3001>
+- Default credentials: Set during installation
 
 #### Tempo (Tracing)
 
@@ -140,10 +181,25 @@ This infrastructure follows GitOps principles using Flux CD:
 ```bash
 cluster/
 ├── core/               # Core infrastructure components
+│   ├── cert-manager/   # Certificate management
+│   ├── ingress/        # Ingress controller
+│   ├── metallb/        # Load balancer for bare metal
+│   ├── namespaces/     # Namespace definitions
+│   ├── repositories/   # Helm repositories
+│   └── secrets/        # Sealed secrets
 ├── security/           # Security-related components
+│   ├── falco/          # Runtime security monitoring
+│   ├── gatekeeper/     # Policy enforcement
+│   └── vault/          # Secrets management
 ├── observability/      # Monitoring and logging
-├── storage/           # Storage solutions
-└── flux-system/       # Flux configuration
+│   ├── kube-prometheus-stack/ # Prometheus and Grafana
+│   ├── loki/           # Log aggregation
+│   └── tempo/          # Distributed tracing
+├── storage/            # Storage solutions
+│   └── minio/          # S3-compatible object storage
+├── supabase/           # Supabase platform
+│   └── base/           # Base Supabase configuration
+└── flux-system/        # Flux configuration
 ```
 
 ## 🛠️ Maintenance
@@ -158,6 +214,19 @@ kubectl get helmreleases -A
 flux get all
 ```
 
+### Secret Management
+
+The repository includes several scripts in the `scripts/` directory to help manage secrets:
+
+- `seal-secret.sh`: Seals a single key-value secret
+- `seal-multi-secret.sh`: Seals multiple key-value pairs from a file
+- `get-secret.sh`: Retrieves and decodes Kubernetes secrets
+- `list-secrets.sh`: Lists all secrets with detailed information
+- `list-namespaces.sh`: Lists all namespaces with their purposes
+- `store-ui-credentials.sh`: Stores UI credentials in both Sealed Secrets and Vault
+
+For more details, see the [Secret Management Scripts README](scripts/README.md).
+
 ### Common Tasks
 
 #### Updating Components
@@ -169,7 +238,11 @@ Components are automatically updated based on the version constraints in their H
 To create a new sealed secret:
 
 ```bash
-kubeseal -f secret.yaml -w sealed-secret.yaml
+# Create a single key-value secret
+./scripts/seal-secret.sh -n my-namespace -s my-secret -k username -v admin
+
+# Create a multi-key secret from a file
+./scripts/seal-multi-secret.sh -n my-namespace -s my-secret -f values.txt
 ```
 
 ## 🚨 Troubleshooting

@@ -9,6 +9,7 @@ resources:
   - namespaces/namespace-observability.yaml
   - namespaces/namespace-security.yaml
   - namespaces/namespace-storage.yaml
+  - namespaces/namespace-supabase.yaml
   # Then repositories
   - repositories
   # Then MetalLB base (HelmRelease) first

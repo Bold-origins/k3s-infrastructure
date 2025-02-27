@@ -1,0 +1,97 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: supabase
+  namespace: supabase
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: supabase
+      version: "0.1.0"  # Use the latest version or specify a version
+      sourceRef:
+        kind: HelmRepository
+        name: supabase
+        namespace: flux-system
+      interval: 30m
+  install:
+    createNamespace: true
+  values:
+    # Default values for Supabase
+    # For more configuration options, refer to the Supabase Kubernetes documentation
+    # https://github.com/supabase-community/supabase-kubernetes
+    
+    # PostgreSQL configuration
+    postgres:
+      enabled: true
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+        requests:
+          cpu: 250m
+          memory: 1Gi
+      persistence:
+        enabled: true
+        size: 20Gi
+    
+    # Storage configuration
+    storage:
+      enabled: true
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 512Mi
+    
+    # API configuration
+    api:
+      enabled: true
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 512Mi
+    
+    # Auth configuration
+    auth:
+      enabled: true
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 512Mi
+    
+    # Studio (Dashboard) configuration
+    studio:
+      enabled: true
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 512Mi
+    
+    # Ingress configuration
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      hosts:
+        - host: supabase.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: supabase-tls
+          hosts:
+            - supabase.example.com 
