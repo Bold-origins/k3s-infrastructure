@@ -1,0 +1,26 @@
+alertmanager:
+  alertmanagerSpec:
+    replicas: 2
+    podAntiAffinity: "soft"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 2000
+      runAsNonRoot: true
+      fsGroup: 2000
+    podDisruptionBudget:
+      maxUnavailable: 1
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi 

@@ -4,6 +4,15 @@ namespace: observability
 resources:
   - helmrelease.yaml
 configMapGenerator:
-  - name: kube-prometheus-stack-values
+  - name: prometheus-values
     files:
-      - values.yaml 
+      - prometheus-values.yaml=values/prometheus.yaml
+  - name: grafana-values
+    files:
+      - grafana-values.yaml=values/grafana.yaml
+  - name: alertmanager-values
+    files:
+      - alertmanager-values.yaml=values/alertmanager.yaml
+  - name: operator-values
+    files:
+      - operator-values.yaml=values/operator.yaml 

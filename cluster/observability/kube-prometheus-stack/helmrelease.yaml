@@ -17,4 +17,10 @@ spec:
       interval: 12h
   valuesFrom:
     - kind: ConfigMap
-      name: kube-prometheus-stack-values
+      name: prometheus-values
+    - kind: ConfigMap
+      name: grafana-values
+    - kind: ConfigMap
+      name: alertmanager-values
+    - kind: ConfigMap
+      name: operator-values
