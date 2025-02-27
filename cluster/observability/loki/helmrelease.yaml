@@ -34,18 +34,12 @@ spec:
         replication_factor: 1
         path_prefix: /var/loki
       
-      # Define the storage configuration properly
-      storage:
-        bucketNames:
-          chunks: loki-data
-          ruler: loki-ruler
-          admin: loki-admin
-        s3:
-          endpoint: minio.storage.svc.cluster.local:9000
+      storage_config:
+        aws:
+          s3: "s3://loki-data:loki-ruler:loki-admin@minio.storage.svc.cluster.local:9000/loki-data"
+          s3forcepathstyle: true
           insecure: true
-          s3ForcePathStyle: true
       
-      # Define schema config
       schemaConfig:
         configs:
           - from: 2020-10-24

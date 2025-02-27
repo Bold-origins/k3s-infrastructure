@@ -15,6 +15,9 @@ spec:
         name: prometheus-community
         namespace: flux-system
       interval: 12h
+  valuesFrom:
+    - kind: ConfigMap
+      name: kube-prometheus-stack-values
   values:
     prometheus:
       prometheusSpec:
