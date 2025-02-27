@@ -10,3 +10,4 @@ resources:
   - kustomization-infrastructure-security.yaml
   - kustomization-infrastructure-observability.yaml
   - kustomization-infrastructure-storage.yaml
+  - kustomization-infrastructure-supabase.yaml

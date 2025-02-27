@@ -1,0 +1,21 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infrastructure-supabase
+  namespace: flux-system
+spec:
+  interval: 30m
+  path: "cluster/supabase"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  timeout: 5m
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+  dependsOn:
+    - name: infrastructure-core 
