@@ -49,6 +49,7 @@ spec:
       extraEnvFrom:
         - secretRef:
             name: loki-minio-credentials
+      serviceAccount: loki
 
     storage:
       bucketNames:
