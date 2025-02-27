@@ -27,6 +27,7 @@ spec:
       dataStorage:
         enabled: true
         size: 10Gi
+        storageClass: local-path
       auditStorage:
         enabled: false
       standalone:
@@ -43,19 +44,18 @@ spec:
           }
       ha:
         enabled: false
+        replicas: 1
       # Disable the default ingress as we're using our own
       ingress:
         enabled: false
       extraEnvironmentVars:
         VAULT_SKIP_VERIFY: "true"
-      injectors:
+      injector:
         enabled: true
-        sidecar:
-          enabled: true
-          resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-            requests:
-              cpu: 100m
-              memory: 256Mi
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi

@@ -52,15 +52,17 @@ spec:
       serviceAccount: loki
 
     storage:
-      bucketNames:
-        chunks: loki-data
-        ruler: loki-ruler
-        admin: loki-admin
       type: s3
       s3:
         endpoint: minio.storage.svc.cluster.local:9000
         insecure: true
         bucketnames: loki-data
+        chunks:
+          bucket: loki-data
+        ruler:
+          bucket: loki-ruler
+        admin:
+          bucket: loki-admin
 
     monitoring:
       selfMonitoring:

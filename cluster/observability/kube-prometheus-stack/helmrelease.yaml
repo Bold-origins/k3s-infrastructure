@@ -15,6 +15,10 @@ spec:
         name: prometheus-community
         namespace: flux-system
       interval: 12h
+  valuesFrom:
+    - kind: ConfigMap
+      name: kube-prometheus-stack-values
+      valuesKey: values.yaml
   values:
     grafana:
       dashboardProviders:
