@@ -79,13 +79,16 @@ spec:
     gateway:
       enabled: false
 
-    # Use simple deployment mode
+    # Use single binary deployment mode and disable other components
     backend:
       enabled: false
+      replicas: 0
     read:
       enabled: false
+      replicas: 0
     write:
       enabled: false
+      replicas: 0
 
-    # Set deploymentMode
+    # Set deploymentMode explicitly
     deploymentMode: SingleBinary
