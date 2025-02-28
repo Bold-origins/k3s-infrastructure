@@ -1,0 +1,115 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: supabase
+  namespace: supabase
+spec:
+  address: https://vault.boldorigin.io
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: supabase
+  namespace: supabase
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: supabase
+    serviceAccount: supabase
+---
+# Database credentials
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: supabase-db
+  namespace: supabase
+spec:
+  type: kv-v2
+  mount: kv
+  path: supabase/db
+  destination:
+    create: true
+    name: supabase-db
+  refreshAfter: 1h
+  vaultAuthRef: supabase
+---
+# JWT credentials
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: supabase-jwt
+  namespace: supabase
+spec:
+  type: kv-v2
+  mount: kv
+  path: supabase/jwt
+  destination:
+    create: true
+    name: supabase-jwt
+  refreshAfter: 1h
+  vaultAuthRef: supabase
+---
+# Dashboard credentials
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: supabase-dashboard
+  namespace: supabase
+spec:
+  type: kv-v2
+  mount: kv
+  path: supabase/dashboard
+  destination:
+    create: true
+    name: supabase-dashboard
+  refreshAfter: 1h
+  vaultAuthRef: supabase
+---
+# SMTP credentials
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: supabase-smtp
+  namespace: supabase
+spec:
+  type: kv-v2
+  mount: kv
+  path: supabase/smtp
+  destination:
+    create: true
+    name: supabase-smtp
+  refreshAfter: 1h
+  vaultAuthRef: supabase
+---
+# Analytics credentials
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: supabase-analytics
+  namespace: supabase
+spec:
+  type: kv-v2
+  mount: kv
+  path: supabase/analytics
+  destination:
+    create: true
+    name: supabase-analytics
+  refreshAfter: 1h
+  vaultAuthRef: supabase
+---
+# S3 credentials for MinIO
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: supabase-s3
+  namespace: supabase
+spec:
+  type: kv-v2
+  mount: kv
+  path: supabase/s3
+  destination:
+    create: true
+    name: supabase-s3
+  refreshAfter: 1h
+  vaultAuthRef: supabase 

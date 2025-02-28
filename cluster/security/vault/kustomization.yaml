@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - helmrelease.yaml
   - ingress.yaml
+  - config/supabase.yaml
 patches:
   - patch: |
       - op: add

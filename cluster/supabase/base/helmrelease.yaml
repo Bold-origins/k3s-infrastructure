@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: supabase
@@ -12,11 +12,24 @@ spec:
       sourceRef:
         kind: GitRepository
         name: supabase
-        namespace: flux-system
-      interval: 30m
+        namespace: supabase
+      interval: 1m
   install:
-    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  releaseName: supabase
+  valuesFrom:
+    - kind: ConfigMap
+      name: supabase-values
+      valuesKey: values.yaml
   values:
+    image:
+      tag: latest
     # Default values for Supabase
     # For more configuration options, refer to the Supabase Kubernetes documentation
     # https://github.com/supabase-community/supabase-kubernetes
@@ -82,11 +95,11 @@ spec:
     # Ingress configuration
     ingress:
       enabled: true
-      className: "nginx"
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        kubernetes.io/ingress.class: traefik
+        cert-manager.io/cluster-issuer: letsencrypt-prod
       hosts:
-        - host: supabase.example.com
+        - host: supabase.k3s.local
           paths:
             - path: /
               pathType: Prefix

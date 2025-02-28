@@ -1,5 +1,17 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: supabase
 resources:
-  - base 
+  - base/namespace.yaml
+  - base/serviceaccount.yaml
+  - base/sources/gitrepository.yaml
+  - base/helmrelease.yaml
+  # We'll no longer use sealed-secrets directly since we're using Vault
+  # - manifests/sealed-secrets.yaml
+  
+configMapGenerator:
+  - name: supabase-values
+    namespace: supabase
+    files:
+      - values.yaml=manifests/values.yaml 
