@@ -74,6 +74,15 @@ spec:
           cpu: 250m
           memory: 512Mi
       serviceAccount: loki
+      # Add more lenient readiness probe configuration
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: http-metrics
+        initialDelaySeconds: 120
+        timeoutSeconds: 5
+        periodSeconds: 30
+        failureThreshold: 10
 
     monitoring:
       selfMonitoring:
