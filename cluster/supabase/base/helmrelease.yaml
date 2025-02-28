@@ -29,7 +29,8 @@ spec:
       valuesKey: values.yaml
   values:
     image:
-      tag: latest
+      repository: supabase/postgres
+      tag: 15.8.1.046
     # Default values for Supabase
     # For more configuration options, refer to the Supabase Kubernetes documentation
     # https://github.com/supabase-community/supabase-kubernetes
@@ -37,6 +38,9 @@ spec:
     # PostgreSQL configuration
     postgres:
       enabled: true
+      image:
+        repository: supabase/postgres
+        tag: 15.8.1.046
       resources:
         limits:
           cpu: 1000m

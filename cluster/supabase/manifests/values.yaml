@@ -5,7 +5,7 @@
 db:
   enabled: true
   image:
-    tag: 15.1.0.147
+    tag: 15.8.1.046
   livenessProbe:
     exec:
       command:
