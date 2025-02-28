@@ -57,8 +57,11 @@ spec:
         limits_config:
           allow_structured_metadata: false
 
+    # Set explicit command arguments to disable structured metadata
     singleBinary:
       replicas: 1
+      extraArgs:
+        - "-validation.allow-structured-metadata=false"
       persistence:
         enabled: true
         size: 10Gi
