@@ -53,6 +53,9 @@ spec:
             kvstore:
               store: inmemory
           enable_api: true
+        # Disable structured metadata to work with the current schema version
+        limits_config:
+          allow_structured_metadata: false
 
     singleBinary:
       replicas: 1
