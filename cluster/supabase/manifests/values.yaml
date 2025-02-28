@@ -21,7 +21,7 @@ db:
 studio:
   image:
     # Currently using latest which is working, but we should pin to this specific version for consistency
-    tag: "latest" # Was 20240326-5e5586d 
+    tag: "20240326-5e5586d" # Was latest
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "K3s Infrastructure"
     STUDIO_DEFAULT_PROJECT: "K3s Supabase"
@@ -66,8 +66,8 @@ auth:
 rest:
   image:
     repository: postgrest/postgrest
-    # Using latest which is working
-    tag: "latest" # Was v12.0.1
+    # Using specific version based on running container
+    tag: "v12.2.8" # Was latest
   resources:
     limits:
       cpu: 500m
@@ -111,8 +111,8 @@ meta:
 storage:
   image:
     repository: supabase/storage-api
-    # Using latest which is working
-    tag: "latest" # Was v0.46.4
+    # Using specific version based on running container
+    tag: "v1.11.2" # Was latest
   livenessProbe:
     httpGet:
       path: /status
@@ -142,8 +142,8 @@ storage:
 imgproxy:
   image:
     repository: darthsim/imgproxy
-    # Using latest which is working
-    tag: "latest" # Was v3.8.0
+    # Using specific stable version instead of latest
+    tag: "v3.8.0" # Was latest
   environment:
     IMGPROXY_ENABLE_WEBP_DETECTION: "true"
   livenessProbe:
@@ -166,8 +166,8 @@ imgproxy:
 kong:
   image:
     repository: kong
-    # Using latest which is working
-    tag: "latest" # Was 2.8.1
+    # Using specific version based on running container
+    tag: "3.9.0" # Was latest
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     KONG_LOG_LEVEL: info

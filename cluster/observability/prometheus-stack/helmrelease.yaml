@@ -77,6 +77,16 @@ spec:
         requests:
           cpu: 50m
           memory: 100Mi
+      hostRootFsMount:
+        enabled: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+      hostProcFsMount:
+        mountPropagation: HostToContainer
+      hostSysFsMount:
+        mountPropagation: HostToContainer
 
     prometheusOperator:
       resources:

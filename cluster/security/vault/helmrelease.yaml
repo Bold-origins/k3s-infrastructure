@@ -37,7 +37,9 @@ spec:
           listener "tcp" {
             address = "[::]:8200"
             cluster_address = "[::]:8201"
-            tls_disable = true
+            tls_disable = false
+            tls_cert_file = "/vault/tls/tls.crt"
+            tls_key_file = "/vault/tls/tls.key"
           }
           storage "file" {
             path = "/vault/data"
@@ -49,7 +51,16 @@ spec:
       ingress:
         enabled: false
       extraEnvironmentVars:
-        VAULT_SKIP_VERIFY: "true"
+        VAULT_SKIP_VERIFY: "false"
+      # Add volume mounts for TLS certificates
+      extraVolumes:
+        - type: secret
+          name: vault-tls
+          path: "/vault/tls"
+      # Remove tls-skip-verify from readiness probe
+      readinessProbe:
+        enabled: true
+        path: "/v1/sys/health?standbyok=true&sealedok=true&uninitok=true"
       injector:
         enabled: true
         resources:
@@ -62,4 +73,4 @@ spec:
     defaultVaultConnection:
       enabled: true
       address: "https://vault.boldorigins.io"
-      skipTLSVerify: true
+      skipTLSVerify: false
