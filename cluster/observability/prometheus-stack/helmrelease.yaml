@@ -21,32 +21,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
-      remediateLastFailure: true
     cleanupOnFail: true
   values:
     fullnameOverride: prometheus
     defaultRules:
       create: true
-      rules:
-        alertmanager: true
-        etcd: true
-        configReloaders: true
-        general: true
-        k8s: true
-        kubeApiserver: true
-        kubePrometheusNodeAlerting: true
-        kubePrometheusNodeRecording: true
-        kubernetesAbsent: true
-        kubernetesApps: true
-        kubernetesResources: true
-        kubernetesStorage: true
-        kubernetesSystem: true
-        kubeScheduler: true
-        network: true
-        node: true
-        prometheus: true
-        prometheusOperator: true
-        time: true
 
     alertmanager:
       enabled: true
