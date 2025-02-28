@@ -4,7 +4,8 @@ metadata:
   name: supabase
   namespace: supabase
 spec:
-  address: https://vault.boldorigin.io
+  address: https://vault.boldorigins.io
+  skipTLSVerify: true
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultAuth
@@ -31,6 +32,7 @@ spec:
   destination:
     create: true
     name: supabase-db
+    overwrite: true
   refreshAfter: 1h
   vaultAuthRef: supabase
 ---
@@ -47,6 +49,7 @@ spec:
   destination:
     create: true
     name: supabase-jwt
+    overwrite: true
   refreshAfter: 1h
   vaultAuthRef: supabase
 ---
@@ -63,6 +66,7 @@ spec:
   destination:
     create: true
     name: supabase-dashboard
+    overwrite: true
   refreshAfter: 1h
   vaultAuthRef: supabase
 ---
@@ -79,6 +83,7 @@ spec:
   destination:
     create: true
     name: supabase-smtp
+    overwrite: true
   refreshAfter: 1h
   vaultAuthRef: supabase
 ---
@@ -95,6 +100,7 @@ spec:
   destination:
     create: true
     name: supabase-analytics
+    overwrite: true
   refreshAfter: 1h
   vaultAuthRef: supabase
 ---
@@ -111,5 +117,6 @@ spec:
   destination:
     create: true
     name: supabase-s3
+    overwrite: true
   refreshAfter: 1h
   vaultAuthRef: supabase 

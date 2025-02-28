@@ -20,7 +20,8 @@ db:
 # Studio configuration
 studio:
   image:
-    tag: 20240326-5e5586d
+    # Currently using latest which is working, but we should pin to this specific version for consistency
+    tag: "latest" # Was 20240326-5e5586d 
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "K3s Infrastructure"
     STUDIO_DEFAULT_PROJECT: "K3s Supabase"
@@ -64,7 +65,9 @@ auth:
 # REST API configuration
 rest:
   image:
-    tag: v12.0.1
+    repository: postgrest/postgrest
+    # Using latest which is working
+    tag: "latest" # Was v12.0.1
   resources:
     limits:
       cpu: 500m
@@ -76,7 +79,9 @@ rest:
 # Realtime configuration
 realtime:
   image:
-    tag: v2.27.5
+    repository: supabase/realtime
+    # Using a specific stable version to avoid Elixir initialization issues
+    tag: v2.25.4
   livenessProbe:
     httpGet:
       path: /
@@ -105,7 +110,9 @@ meta:
 # Storage configuration with MinIO integration
 storage:
   image:
-    tag: v0.46.4
+    repository: supabase/storage-api
+    # Using latest which is working
+    tag: "latest" # Was v0.46.4
   livenessProbe:
     httpGet:
       path: /status
@@ -134,7 +141,9 @@ storage:
 # Image proxy configuration
 imgproxy:
   image:
-    tag: v3.8.0
+    repository: darthsim/imgproxy
+    # Using latest which is working
+    tag: "latest" # Was v3.8.0
   environment:
     IMGPROXY_ENABLE_WEBP_DETECTION: "true"
   livenessProbe:
@@ -157,7 +166,8 @@ imgproxy:
 kong:
   image:
     repository: kong
-    tag: 2.8.1
+    # Using latest which is working
+    tag: "latest" # Was 2.8.1
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     KONG_LOG_LEVEL: info
@@ -187,7 +197,8 @@ kong:
 # Analytics configuration
 analytics:
   image:
-    tag: 1.4.0
+    repository: supabase/logflare
+    tag: 1.11.0 # Was 1.4.0
   livenessProbe:
     httpGet:
       path: /health
@@ -204,7 +215,8 @@ analytics:
 # Vector logging configuration
 vector:
   image:
-    tag: 0.34.0-alpine
+    repository: timberio/vector
+    tag: 0.30.0-alpine # Was 0.34.0-alpine
   livenessProbe:
     httpGet:
       path: /health
@@ -228,7 +240,8 @@ vector:
 # Functions configuration
 functions:
   image:
-    tag: v1.41.2
+    repository: supabase/edge-runtime
+    tag: v1.67.0 # Was v1.41.2
   resources:
     limits:
       cpu: 500m
@@ -267,4 +280,21 @@ secret:
   s3:
     keyId: null
     accessKey: null
-    existingSecret: supabase-s3 
+    existingSecret: supabase-s3
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  hosts:
+    - host: supabase.boldorigins.io
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: supabase-boldorigins-tls
+      hosts:
+        - supabase.boldorigins.io 

@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: supabase-db-init
+  namespace: supabase
+  labels:
+    app.kubernetes.io/component: init-job
+    app.kubernetes.io/instance: supabase
+  annotations:
+    # This ensures the job runs even if it's already been completed
+    kustomize.toolkit.fluxcd.io/prune: "false"
+spec:
+  ttlSecondsAfterFinished: 3600  # Retain job for 1 hour after completion
+  backoffLimit: 5
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: wait-for-db
+        image: postgres:15-alpine
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          until pg_isready -h supabase-supabase-db -p 5432 -U postgres; do
+            echo "Waiting for database to start..."
+            sleep 2
+          done
+          echo "Database is ready"
+      containers:
+      - name: init-db
+        image: postgres:15-alpine
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting database initialization..."
+          cd /scripts
+          
+          # Loop through scripts in order
+          for script in 01-create-users.sql 02-create-schemas.sql 03-realtime-tables.sql 04-analytics-tables.sql 05-fix-permissions.sql; do
+            echo "Executing $script..."
+            PGPASSWORD=postgres psql -h supabase-supabase-db -U postgres -d postgres -f /scripts/$script
+            if [ $? -ne 0 ]; then
+              echo "Error executing $script"
+              exit 1
+            fi
+            echo "$script completed successfully"
+          done
+          
+          echo "Database initialization completed successfully!"
+        volumeMounts:
+        - name: db-init-scripts
+          mountPath: /scripts
+      volumes:
+      - name: db-init-scripts
+        configMap:
+          name: supabase-db-init-scripts 

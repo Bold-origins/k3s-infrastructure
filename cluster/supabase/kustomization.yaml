@@ -9,6 +9,9 @@ resources:
   - base/helmrelease.yaml
   # We'll no longer use sealed-secrets directly since we're using Vault
   # - manifests/sealed-secrets.yaml
+  - manifests/secrets/supabase-db-secret.yaml
+  - manifests/db-init-configmap.yaml
+  - initjobs/db-init-job.yaml
   
 configMapGenerator:
   - name: supabase-values

@@ -1,0 +1,183 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supabase-db-init-scripts
+  namespace: supabase
+data:
+  01-create-users.sql: |
+    -- Create necessary supabase users
+    DO $$
+    BEGIN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'supabase_admin') THEN
+            CREATE USER supabase_admin WITH CREATEROLE CREATEDB PASSWORD 'postgres';
+        END IF;
+        
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'supabase_auth_admin') THEN
+            CREATE USER supabase_auth_admin WITH NOINHERIT PASSWORD 'postgres';
+        END IF;
+        
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'supabase_storage_admin') THEN
+            CREATE USER supabase_storage_admin WITH NOINHERIT PASSWORD 'postgres';
+        END IF;
+        
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'supabase_realtime_admin') THEN
+            CREATE USER supabase_realtime_admin WITH NOINHERIT PASSWORD 'postgres';
+        END IF;
+        
+        -- Grant necessary permissions
+        GRANT ALL PRIVILEGES ON DATABASE postgres TO supabase_admin;
+        GRANT ALL PRIVILEGES ON SCHEMA public TO supabase_admin;
+        ALTER USER supabase_admin WITH SUPERUSER;
+    END
+    $$;
+
+  02-create-schemas.sql: |
+    -- Create realtime schema
+    CREATE SCHEMA IF NOT EXISTS realtime;
+    
+    -- Create logflare schema
+    CREATE SCHEMA IF NOT EXISTS logflare;
+    
+    -- Create _analytics schema
+    CREATE SCHEMA IF NOT EXISTS _analytics;
+    
+    -- Set proper permissions
+    GRANT ALL ON SCHEMA realtime TO supabase_admin;
+    GRANT ALL ON SCHEMA realtime TO supabase_realtime_admin;
+    GRANT ALL ON SCHEMA logflare TO supabase_admin;
+    GRANT ALL ON SCHEMA _analytics TO supabase_admin;
+    GRANT USAGE ON SCHEMA _analytics TO service_role;
+
+  03-realtime-tables.sql: |
+    -- Create tables in realtime schema
+    SET search_path TO realtime;
+    
+    CREATE TABLE IF NOT EXISTS realtime.extensions (
+      id bigserial PRIMARY KEY,
+      type text NOT NULL,
+      settings jsonb NOT NULL DEFAULT '{}'::jsonb,
+      tenant_external_id text,
+      inserted_at timestamp without time zone NOT NULL DEFAULT now(),
+      updated_at timestamp without time zone NOT NULL DEFAULT now()
+    );
+    
+    CREATE TABLE IF NOT EXISTS realtime.tenants (
+      id bigserial PRIMARY KEY,
+      name text NOT NULL,
+      external_id text UNIQUE NOT NULL,
+      jwt_secret text NOT NULL,
+      inserted_at timestamp without time zone NOT NULL DEFAULT now(),
+      updated_at timestamp without time zone NOT NULL DEFAULT now()
+    );
+    
+    -- Ensure permissions
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA realtime TO supabase_realtime_admin;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA realtime TO supabase_realtime_admin;
+
+  04-analytics-tables.sql: |
+    -- Create system_metrics table for Logflare/Analytics
+    SET search_path TO logflare;
+    
+    CREATE TABLE IF NOT EXISTS logflare.system_metrics (
+      id SERIAL PRIMARY KEY,
+      all_logs_logged BIGINT NOT NULL DEFAULT 0,
+      node VARCHAR(255) NOT NULL UNIQUE,
+      inserted_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    
+    -- Create users table
+    CREATE TABLE IF NOT EXISTS logflare.users (
+      id SERIAL PRIMARY KEY,
+      email TEXT UNIQUE,
+      provider TEXT,
+      token TEXT,
+      api_key TEXT UNIQUE,
+      old_api_key TEXT,
+      email_preferred BOOLEAN,
+      name TEXT,
+      image TEXT,
+      email_me_product BOOLEAN,
+      admin BOOLEAN,
+      phone TEXT,
+      bigquery_project_id TEXT,
+      bigquery_dataset_location TEXT,
+      bigquery_dataset_id TEXT,
+      bigquery_udfs_hash TEXT,
+      bigquery_processed_bytes_limit INTEGER,
+      api_quota INTEGER,
+      valid_google_account BOOLEAN,
+      provider_uid TEXT,
+      company TEXT,
+      billing_enabled BOOLEAN,
+      endpoints_beta BOOLEAN,
+      metadata JSONB,
+      preferences JSONB,
+      inserted_at TIMESTAMP,
+      updated_at TIMESTAMP
+    );
+    
+    -- Create sources table
+    CREATE TABLE IF NOT EXISTS logflare.sources (
+      id SERIAL PRIMARY KEY,
+      name TEXT,
+      service_name TEXT,
+      token TEXT UNIQUE,
+      public_token TEXT,
+      favorite BOOLEAN,
+      bigquery_table_ttl INTEGER,
+      api_quota INTEGER,
+      webhook_notification_url TEXT,
+      slack_hook_url TEXT,
+      bq_table_partition_type TEXT,
+      custom_event_message_keys TEXT[],
+      log_events_updated_at TIMESTAMP,
+      notifications_every INTEGER,
+      lock_schema BOOLEAN,
+      validate_schema BOOLEAN,
+      drop_lql_filters TEXT,
+      drop_lql_string TEXT,
+      v2_pipeline BOOLEAN,
+      suggested_keys TEXT[],
+      transform_copy_fields TEXT,
+      user_id INTEGER REFERENCES logflare.users(id),
+      notifications JSONB,
+      inserted_at TIMESTAMP,
+      updated_at TIMESTAMP
+    );
+    
+    -- Add sample data
+    INSERT INTO logflare.users (email, api_key, inserted_at, updated_at)
+    VALUES ('admin@example.com', 'test-api-key', NOW(), NOW())
+    ON CONFLICT DO NOTHING;
+    
+    INSERT INTO logflare.sources (name, token, user_id, log_events_updated_at, inserted_at, updated_at)
+    VALUES ('Default Source', 'default-source-token', 1, NOW(), NOW(), NOW())
+    ON CONFLICT DO NOTHING;
+    
+    -- Add system metrics record
+    INSERT INTO logflare.system_metrics (all_logs_logged, node)
+    VALUES (0, 'logflare') 
+    ON CONFLICT (node) DO NOTHING;
+    
+    -- Grant permissions
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA logflare TO supabase_admin;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA logflare TO supabase_admin;
+
+  05-fix-permissions.sql: |
+    -- Fix schema ownership
+    ALTER SCHEMA realtime OWNER TO supabase_realtime_admin;
+    ALTER SCHEMA auth OWNER TO supabase_auth_admin;
+    ALTER SCHEMA storage OWNER TO supabase_storage_admin;
+    
+    -- Add cross-schema permissions
+    GRANT USAGE ON SCHEMA auth TO service_role;
+    GRANT USAGE ON SCHEMA realtime TO service_role;
+    GRANT USAGE ON SCHEMA storage TO service_role;
+    GRANT USAGE ON SCHEMA logflare TO service_role;
+    
+    -- Make sure public schema is accessible
+    GRANT ALL ON SCHEMA public TO postgres;
+    GRANT ALL ON SCHEMA public TO anon;
+    GRANT ALL ON SCHEMA public TO authenticated;
+    GRANT ALL ON SCHEMA public TO service_role; 

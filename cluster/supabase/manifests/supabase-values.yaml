@@ -1,0 +1,4 @@
+realtime:
+  image:
+    repository: supabase/realtime
+    tag: v2.25.4 
