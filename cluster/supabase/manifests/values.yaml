@@ -1,0 +1,270 @@
+# Supabase Helm values
+# Secrets are managed with Vault now
+
+# Database configuration
+db:
+  enabled: true
+  image:
+    tag: 15.1.0.147
+  livenessProbe:
+    exec:
+      command:
+        - pg_isready
+        - -U
+        - postgres
+    initialDelaySeconds: 3
+  persistence:
+    enabled: true
+    size: 20Gi
+
+# Studio configuration
+studio:
+  image:
+    tag: 20240326-5e5586d
+  environment:
+    STUDIO_DEFAULT_ORGANIZATION: "K3s Infrastructure"
+    STUDIO_DEFAULT_PROJECT: "K3s Supabase"
+    SUPABASE_PUBLIC_URL: "https://supabase.boldorigins.io/"
+    NEXT_PUBLIC_ENABLE_LOGS: "true"
+  livenessProbe:
+    httpGet:
+      path: /api/profile
+      port: 3000
+    initialDelaySeconds: 3
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Auth configuration
+auth:
+  image:
+    tag: v2.143.0
+  environment:
+    API_EXTERNAL_URL: "https://supabase.boldorigins.io"
+    GOTRUE_SITE_URL: "https://supabase.boldorigins.io"
+    GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+    GOTRUE_MAILER_AUTOCONFIRM: "true"
+    # SMTP Configuration
+    GOTRUE_SMTP_ADMIN_EMAIL: "admin@boldorigins.io"
+    GOTRUE_SMTP_HOST: "smtp.mailgun.org"
+    GOTRUE_SMTP_PORT: "587"
+    GOTRUE_SMTP_SENDER_NAME: "Supabase Auth"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# REST API configuration
+rest:
+  image:
+    tag: v12.0.1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Realtime configuration
+realtime:
+  image:
+    tag: v2.27.5
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4000
+    initialDelaySeconds: 3
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Meta service configuration
+meta:
+  image:
+    tag: v0.80.0
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Storage configuration with MinIO integration
+storage:
+  image:
+    tag: v0.46.4
+  livenessProbe:
+    httpGet:
+      path: /status
+      port: 5000
+    initialDelaySeconds: 3
+  persistence:
+    enabled: true
+    size: 10Gi
+  environment:
+    # MinIO Integration
+    STORAGE_BACKEND: "s3"
+    GLOBAL_S3_ENDPOINT: "http://minio.storage.svc:9000"
+    GLOBAL_S3_PROTOCOL: "http"
+    GLOBAL_S3_FORCE_PATH_STYLE: "true"
+    AWS_DEFAULT_REGION: "us-east-1"
+    # External uploads/downloads should go through public URL
+    GLOBAL_S3_PUBLIC_URL: "https://minio.boldorigins.io"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Image proxy configuration
+imgproxy:
+  image:
+    tag: v3.8.0
+  environment:
+    IMGPROXY_ENABLE_WEBP_DETECTION: "true"
+  livenessProbe:
+    exec:
+      command:
+        - imgproxy
+        - health
+    initialDelaySeconds: 3
+  persistence:
+    enabled: false
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Kong API Gateway configuration
+kong:
+  image:
+    repository: kong
+    tag: 2.8.1
+  environment:
+    KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
+    KONG_LOG_LEVEL: info
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/rewrite-target: "/"
+    tls:
+      - secretName: supabase-tls
+        hosts:
+          - supabase.boldorigins.io
+    hosts:
+      - host: supabase.boldorigins.io
+        paths:
+          - path: /
+            pathType: Prefix
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Analytics configuration
+analytics:
+  image:
+    tag: 1.4.0
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 4000
+    initialDelaySeconds: 3
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Vector logging configuration
+vector:
+  image:
+    tag: 0.34.0-alpine
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 9001
+    initialDelaySeconds: 3
+  volumeMounts:
+    - name: pod-logs
+      mountPath: /var/log/pods
+  volumes:
+    - name: pod-logs
+      hostPath:
+        path: /var/log/pods
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# Functions configuration
+functions:
+  image:
+    tag: v1.41.2
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+# MinIO integration for storage
+minio:
+  enabled: false # Set to false since we're using existing MinIO
+
+# Secret references (these use Vault now)
+secret:
+  jwt:
+    anonKey: null
+    serviceKey: null
+    secret: null
+    existingSecret: supabase-jwt
+  smtp:
+    username: null
+    password: null
+    existingSecret: supabase-smtp
+  dashboard:
+    username: null
+    password: null
+    existingSecret: supabase-dashboard
+  db:
+    username: null
+    password: null
+    database: null
+    existingSecret: supabase-db
+  analytics:
+    apiKey: null
+    existingSecret: supabase-analytics
+  s3:
+    keyId: null
+    accessKey: null
+    existingSecret: supabase-s3 
