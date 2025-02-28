@@ -99,10 +99,12 @@ spec:
   url: https://metallb.github.io/metallb
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: GitRepository
 metadata:
   name: supabase
   namespace: flux-system
 spec:
   interval: 30m
-  url: https://supabase-community.github.io/supabase-kubernetes
+  url: https://github.com/supabase-community/supabase-kubernetes
+  ref:
+    branch: main

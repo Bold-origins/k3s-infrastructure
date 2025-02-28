@@ -8,10 +8,9 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: supabase
-      version: "0.1.0"  # Use the latest version or specify a version
+      chart: ./charts/supabase
       sourceRef:
-        kind: HelmRepository
+        kind: GitRepository
         name: supabase
         namespace: flux-system
       interval: 30m
