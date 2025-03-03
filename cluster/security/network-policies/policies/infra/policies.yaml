@@ -1,0 +1,106 @@
+---
+# Allow ingress from kube-system (for kubelet) to cert-manager and cert-manager-webhook
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-kubelet
+  namespace: infra
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: cert-manager
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - port: 9402
+      protocol: TCP
+    - port: 10250
+      protocol: TCP
+---
+# Allow ingress to cert-manager-webhook from cert-manager
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-webhook
+  namespace: infra
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager-webhook-hetzner
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: cert-manager
+    ports:
+    - port: 8443
+      protocol: TCP
+---
+# Allow ingress from all namespaces to cert-manager webhook for DNS01 validation
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-webhook-dns-validation
+  namespace: infra
+spec:
+  podSelector:
+    matchLabels:
+      app: cert-manager-webhook-hetzner
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 443
+      protocol: TCP
+---
+# Allow ingress to sealed-secrets controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-sealed-secrets
+  namespace: infra
+spec:
+  podSelector:
+    matchLabels:
+      name: sealed-secrets-controller
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 8080
+      protocol: TCP
+---
+# Allow egress from cert-manager to Hetzner DNS API
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-hetzner-api
+  namespace: infra
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: cert-manager
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+    ports:
+    - port: 443
+      protocol: TCP 

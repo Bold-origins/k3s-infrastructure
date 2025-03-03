@@ -1,0 +1,49 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: network-policy-alerts
+  namespace: observability
+  labels:
+    app: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: network-policy.rules
+    rules:
+    - alert: NetworkPolicyDropsHigh
+      expr: >
+        sum(rate(container_network_receive_packets_dropped_total[5m])) by (namespace, pod) > 10
+      for: 5m
+      labels:
+        severity: warning
+        team: security
+      annotations:
+        summary: "High rate of dropped network packets in pod"
+        description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has a high rate of dropped network packets, which may indicate NetworkPolicy blocking."
+        runbook_url: "https://github.com/your-org/k3s-infrastructure/blob/main/docs/runbooks/network-policy-troubleshooting.md"
+    
+    - alert: NetworkPolicyEgressBlockedHigh
+      expr: >
+        sum(rate(node_netstat_Tcp_OutSegs[5m])) by (instance) > 1000
+        and
+        sum(rate(node_netstat_Tcp_OutRsts[5m])) by (instance) > 100
+      for: 10m
+      labels:
+        severity: warning
+        team: security
+      annotations:
+        summary: "High rate of TCP RST packets from instance {{ $labels.instance }}"
+        description: "Instance {{ $labels.instance }} is generating a high number of outgoing TCP RST packets, which may indicate NetworkPolicy egress blocking."
+        runbook_url: "https://github.com/your-org/k3s-infrastructure/blob/main/docs/runbooks/network-policy-troubleshooting.md"
+    
+    - alert: NetworkPolicyIngressBlockedHigh
+      expr: >
+        sum(rate(node_netstat_Tcp_InErrs[5m])) by (instance) > 50
+      for: 10m
+      labels:
+        severity: warning
+        team: security
+      annotations:
+        summary: "High rate of TCP errors on instance {{ $labels.instance }}"
+        description: "Instance {{ $labels.instance }} is experiencing a high rate of TCP errors, which may indicate NetworkPolicy ingress blocking."
+        runbook_url: "https://github.com/your-org/k3s-infrastructure/blob/main/docs/runbooks/network-policy-troubleshooting.md" 

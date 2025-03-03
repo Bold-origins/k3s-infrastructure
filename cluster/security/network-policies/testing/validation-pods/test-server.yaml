@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netpol-test-server
+  namespace: netpol-test
+  labels:
+    app: netpol-test-server
+spec:
+  containers:
+  - name: server
+    image: nginx:stable-alpine
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+        - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netpol-test-server
+  namespace: netpol-test
+spec:
+  selector:
+    app: netpol-test-server
+  ports:
+  - port: 80
+    targetPort: 80 

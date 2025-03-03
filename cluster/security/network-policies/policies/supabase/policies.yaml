@@ -1,0 +1,102 @@
+---
+# Allow ingress to Supabase API from ingress-nginx
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-supabase-api-access
+  namespace: supabase
+spec:
+  podSelector:
+    matchLabels:
+      app: supabase-api
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: infra
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+    ports:
+    - port: 3000
+      protocol: TCP
+---
+# Allow ingress to Supabase Studio from ingress-nginx
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-supabase-studio-access
+  namespace: supabase
+spec:
+  podSelector:
+    matchLabels:
+      app: supabase-studio
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: infra
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+    ports:
+    - port: 3000
+      protocol: TCP
+---
+# Allow Supabase components to communicate with PostgreSQL
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-supabase-to-postgres
+  namespace: supabase
+spec:
+  podSelector:
+    matchLabels:
+      app: supabase-db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: supabase-api
+    - podSelector:
+        matchLabels:
+          app: supabase-auth
+    - podSelector:
+        matchLabels:
+          app: supabase-storage
+    - podSelector:
+        matchLabels:
+          app: supabase-realtime
+    ports:
+    - port: 5432
+      protocol: TCP
+---
+# Allow egress from Supabase Storage to MinIO
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-supabase-storage-to-minio
+  namespace: supabase
+spec:
+  podSelector:
+    matchLabels:
+      app: supabase-storage
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: storage
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: minio
+    ports:
+    - port: 9000
+      protocol: TCP 

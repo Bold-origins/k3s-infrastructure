@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netpol-test
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netpol-test-client
+  namespace: netpol-test
+  labels:
+    app: netpol-test-client
+spec:
+  containers:
+  - name: curl
+    image: curlimages/curl:latest
+    command: ['sleep', '3600']
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netpol-test-server
+  namespace: netpol-test
+  labels:
+    app: netpol-test-server
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: netpol-test-server
+  namespace: netpol-test
+spec:
+  selector:
+    app: netpol-test-server
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-same-namespace
+  namespace: netpol-test
+  annotations:
+    priority: "1"
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: netpol-test
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: netpol-test
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: netpol-test
+  annotations:
+    priority: "2"
+spec:
+  podSelector:
+    matchLabels:
+      app: netpol-test-client
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53 

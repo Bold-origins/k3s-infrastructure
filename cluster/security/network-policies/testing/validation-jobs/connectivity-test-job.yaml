@@ -1,0 +1,89 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: netpol-connectivity-test
+  namespace: netpol-test
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+      - name: connectivity-tester
+        image: nicolaka/netshoot
+        command: ["/bin/sh"]
+        args:
+        - "-c"
+        - |
+          # Initialize test results
+          echo "===== Network Policy Connectivity Tests ====="
+          echo "Starting tests at $(date)"
+          echo "-----------------------------------------"
+          
+          # Test internal connectivity first (should work)
+          echo "Testing internal connectivity to test-server..."
+          curl -s --connect-timeout 5 netpol-test-server > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "✅ PASS: Can connect to netpol-test-server"
+          else
+            echo "❌ FAIL: Cannot connect to netpol-test-server"
+          fi
+          
+          # Test connectivity to protected services
+          echo "-----------------------------------------"
+          echo "Testing protected services that should be denied:"
+          
+          # Test connection to Grafana (should be blocked)
+          echo "Testing Grafana connectivity..."
+          curl -s --connect-timeout 5 -k https://grafana.boldorigins.io > /dev/null
+          if [ $? -ne 0 ]; then
+            echo "✅ PASS: Cannot connect to Grafana (expected)"
+          else
+            echo "❌ FAIL: Can connect to Grafana (unexpected)"
+          fi
+          
+          # Test connection to Vault (should be blocked)
+          echo "Testing Vault connectivity..."
+          curl -s --connect-timeout 5 -k https://vault.boldorigins.io > /dev/null
+          if [ $? -ne 0 ]; then
+            echo "✅ PASS: Cannot connect to Vault (expected)"
+          else
+            echo "❌ FAIL: Can connect to Vault (unexpected)"
+          fi
+          
+          # Test connection to MinIO console (should be blocked)
+          echo "Testing MinIO console connectivity..."
+          curl -s --connect-timeout 5 -k https://minio-console.boldorigins.io > /dev/null
+          if [ $? -ne 0 ]; then
+            echo "✅ PASS: Cannot connect to MinIO console (expected)"
+          else
+            echo "❌ FAIL: Can connect to MinIO console (unexpected)"
+          fi
+          
+          # Test connection to Supabase (should be blocked)
+          echo "Testing Supabase connectivity..."
+          curl -s --connect-timeout 5 -k https://supabase.boldorigins.io > /dev/null
+          if [ $? -ne 0 ]; then
+            echo "✅ PASS: Cannot connect to Supabase (expected)"
+          else
+            echo "❌ FAIL: Can connect to Supabase (unexpected)"
+          fi
+          
+          echo "-----------------------------------------"
+          echo "Tests completed at $(date)"
+          exit 0
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+            - ALL
+      restartPolicy: Never 

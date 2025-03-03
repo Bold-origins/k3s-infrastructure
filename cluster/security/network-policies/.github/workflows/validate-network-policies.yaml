@@ -1,0 +1,70 @@
+name: Validate Network Policies
+
+on:
+  pull_request:
+    paths:
+      - 'cluster/security/network-policies/**'
+  push:
+    branches: [main]
+    paths:
+      - 'cluster/security/network-policies/**'
+
+jobs:
+  validate:
+    name: Validate Network Policies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Set up Kind cluster
+        uses: helm/kind-action@v1.5.0
+        with:
+          wait: 300s
+          cluster_name: netpol-test
+
+      - name: Install CNI with NetworkPolicy support
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+          kubectl -n kube-system wait --for=condition=ready pod -l k8s-app=calico-node --timeout=90s
+
+      - name: Install Kustomize
+        uses: fluxcd/pkg/actions/kustomize@main
+
+      - name: Validate kustomization files
+        run: |
+          cd cluster/security/network-policies
+          kustomize build --load-restrictor LoadRestrictionsNone . > /dev/null
+          echo "✅ Kustomize build succeeded"
+
+      - name: Apply test environment
+        run: |
+          cd cluster/security/network-policies
+          kubectl apply -k testing/validation-pods/
+          kubectl wait --for=condition=ready pod -l app=netpol-test-client -n netpol-test --timeout=60s
+          kubectl wait --for=condition=ready pod -l app=netpol-test-server -n netpol-test --timeout=60s
+
+      - name: Test individual namespace policies
+        run: |
+          cd cluster/security/network-policies
+          for ns in infra observability security storage supabase; do
+            echo "Testing $ns namespace policies..."
+            kubectl apply -k policies/$ns/
+            sleep 5
+          done
+          echo "✅ Individual namespace policies applied successfully"
+
+      - name: Run connectivity tests
+        run: |
+          cd cluster/security/network-policies
+          kubectl apply -k testing/validation-jobs/
+          kubectl wait --for=condition=complete job/netpol-connectivity-test -n netpol-test --timeout=90s
+          kubectl logs job/netpol-connectivity-test -n netpol-test
+
+      - name: Clean up
+        if: always()
+        run: |
+          kind delete cluster --name netpol-test 

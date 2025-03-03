@@ -1,0 +1,79 @@
+---
+# Allow ingress to Vault from ingress-nginx
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-vault-access
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: vault
+      app.kubernetes.io/name: vault
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: infra
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+    ports:
+    - port: 8200
+      protocol: TCP
+---
+# Allow access to Vault from other namespaces for secret retrieval
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-vault-from-apps
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: vault
+      app.kubernetes.io/name: vault
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: infra
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: observability
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: storage
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: supabase
+    ports:
+    - port: 8200
+      protocol: TCP
+---
+# Allow Vault instances to communicate with each other
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-vault-internal
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: vault
+      app.kubernetes.io/name: vault
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: vault
+          app.kubernetes.io/name: vault
+    ports:
+    - port: 8201
+      protocol: TCP 

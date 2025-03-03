@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netpol-falco-rules
+  namespace: security
+data:
+  netpol-rules.yaml: |-
+    - rule: Unexpected Ingress Traffic Denied
+      desc: Detects when a pod's attempted ingress connection is denied by a NetworkPolicy
+      condition: >
+        evt.type = drop and
+        k8s.ns.name != "kube-system" and
+        not (k8s.pod.name startswith "netpol-test-") and
+        ka.direction = "ingress"
+      output: >
+        Network connection denied by NetworkPolicy (pod=%k8s.pod.name namespace=%k8s.ns.name 
+        source_ip=%fd.sip source_port=%fd.sport dest_ip=%fd.dip dest_port=%fd.dport proto=%fd.proto)
+      priority: WARNING
+      tags: [network, mitre_defense_evasion]
+
+    - rule: Unexpected Egress Traffic Denied
+      desc: Detects when a pod's attempted egress connection is denied by a NetworkPolicy
+      condition: >
+        evt.type = drop and
+        k8s.ns.name != "kube-system" and
+        not (k8s.pod.name startswith "netpol-test-") and
+        ka.direction = "egress"
+      output: >
+        Egress connection denied by NetworkPolicy (pod=%k8s.pod.name namespace=%k8s.ns.name 
+        source_ip=%fd.sip dest_ip=%fd.dip dest_port=%fd.dport proto=%fd.proto)
+      priority: WARNING
+      tags: [network, mitre_command_and_control]
+
+    - rule: Network Policy Scanning Attempt
+      desc: Detects when a pod is attempting to connect to multiple services in a short time (potential scanning)
+      condition: >
+        evt.type = connect and
+        k8s.ns.name != "kube-system" and
+        not (k8s.pod.name startswith "netpol-test-") and
+        not k8s.pod.name in (falco, prometheus)
+      output: >
+        Potential network scanning detected (pod=%k8s.pod.name namespace=%k8s.ns.name 
+        connections=%evt.count source_ip=%fd.sip dest_ip=%fd.dip)
+      priority: WARNING
+      rate: 30s
+      rate_outburst: 5
+      tags: [network, mitre_discovery] 
