@@ -29,7 +29,7 @@ studio:
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
-      path: /_next/static
+      path: /api/health
       port: 3000
     initialDelaySeconds: 60
     periodSeconds: 15
@@ -37,7 +37,7 @@ studio:
     failureThreshold: 3
   startupProbe:
     httpGet:
-      path: /_next/static
+      path: /api/health
       port: 3000
     initialDelaySeconds: 10
     periodSeconds: 5
