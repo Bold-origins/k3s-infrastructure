@@ -4,5 +4,5 @@ metadata:
   name: default
   namespace: security
 spec:
-  address: http://vault.security.svc.cluster.local:8200
+  address: https://vault.boldorigins.io
   skipTLSVerify: true 
