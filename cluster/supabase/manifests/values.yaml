@@ -21,7 +21,7 @@ db:
 studio:
   image:
     # Currently using latest which is working, but we should pin to this specific version for consistency
-    tag: "20240326-5e5586d" # Was latest
+    tag: "latest" # Was 20240326-5e5586d
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "K3s Infrastructure"
     STUDIO_DEFAULT_PROJECT: "K3s Supabase"
@@ -29,9 +29,12 @@ studio:
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
-      path: /api/profile
+      path: /
       port: 3000
-    initialDelaySeconds: 3
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
   resources:
     limits:
       cpu: 500m
