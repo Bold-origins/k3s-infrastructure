@@ -27,17 +27,18 @@ studio:
     STUDIO_DEFAULT_PROJECT: "K3s Supabase"
     SUPABASE_PUBLIC_URL: "https://supabase.boldorigins.io/"
     NEXT_PUBLIC_ENABLE_LOGS: "true"
+    NEXT_PUBLIC_IS_PLATFORM: "true"
+    DEFAULT_ORGANIZATION_NAME: "K3s Infrastructure"
+    DEFAULT_PROJECT_NAME: "K3s Supabase"
   livenessProbe:
-    httpGet:
-      path: /api/health
+    tcpSocket:
       port: 3000
     initialDelaySeconds: 60
     periodSeconds: 15
     timeoutSeconds: 3
     failureThreshold: 3
   startupProbe:
-    httpGet:
-      path: /api/health
+    tcpSocket:
       port: 3000
     initialDelaySeconds: 10
     periodSeconds: 5
@@ -179,7 +180,6 @@ imgproxy:
 kong:
   image:
     repository: kong
-    # Using specific version based on running container
     tag: "3.9.0" # Was latest
   environment:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
@@ -189,7 +189,16 @@ kong:
     className: "nginx"
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      nginx.ingress.kubernetes.io/rewrite-target: "/"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+      nginx.ingress.kubernetes.io/proxy-buffers: "4 256k"
+      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "256k"
+      nginx.ingress.kubernetes.io/client-header-buffer-size: "64k"
+      nginx.ingress.kubernetes.io/http2-max-field-size: "16k"
+      nginx.ingress.kubernetes.io/http2-max-header-size: "128k"
+      nginx.ingress.kubernetes.io/large-client-header-buffers: "8 64k"
     tls:
       - secretName: supabase-tls
         hosts:
@@ -197,8 +206,8 @@ kong:
     hosts:
       - host: supabase.boldorigins.io
         paths:
-          - path: /
-            pathType: Prefix
+          - path: /(.*)
+            pathType: ImplementationSpecific
   resources:
     limits:
       cpu: 500m
