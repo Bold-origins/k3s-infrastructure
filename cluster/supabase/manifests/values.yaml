@@ -82,6 +82,9 @@ realtime:
     repository: supabase/realtime
     # Using a specific stable version to avoid Elixir initialization issues
     tag: v2.25.4
+  environment:
+    DB_USER: supabase_realtime_admin
+    DB_AFTER_CONNECT_QUERY: SET search_path TO realtime
   livenessProbe:
     httpGet:
       path: /

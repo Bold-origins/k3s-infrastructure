@@ -4,8 +4,7 @@ metadata:
   name: supabase-db-init
   namespace: supabase
   labels:
-    app.kubernetes.io/component: init-job
-    app.kubernetes.io/instance: supabase
+    app: supabase-db-init
   annotations:
     # This ensures the job runs even if it's already been completed
     kustomize.toolkit.fluxcd.io/prune: "false"
@@ -34,25 +33,30 @@ spec:
         - /bin/sh
         - -c
         - |
-          echo "Starting database initialization..."
-          cd /scripts
-          
-          # Loop through scripts in order
-          for script in 01-create-users.sql 02-create-schemas.sql 03-realtime-tables.sql 04-analytics-tables.sql 05-fix-permissions.sql; do
-            echo "Executing $script..."
-            PGPASSWORD=postgres psql -h supabase-supabase-db -U postgres -d postgres -f /scripts/$script
+          # Wait for database to be ready
+          until pg_isready -h supabase-supabase-db -p 5432 -U postgres; do
+            echo "Waiting for database to start..."
+            sleep 2
+          done
+          echo "Database is ready"
+
+          # Run initialization scripts
+          for script in /docker-entrypoint-initdb.d/*.sql; do
+            echo "Running $script..."
+            psql -h supabase-supabase-db -p 5432 -U postgres -f "$script"
             if [ $? -ne 0 ]; then
-              echo "Error executing $script"
+              echo "Error running $script"
               exit 1
             fi
-            echo "$script completed successfully"
           done
-          
-          echo "Database initialization completed successfully!"
+          echo "Database initialization completed"
+        env:
+        - name: PGPASSWORD
+          value: postgres
         volumeMounts:
-        - name: db-init-scripts
-          mountPath: /scripts
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
-      - name: db-init-scripts
+      - name: init-scripts
         configMap:
           name: supabase-db-init-scripts 
