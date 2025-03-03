@@ -4,7 +4,7 @@ metadata:
   name: supabase
   namespace: supabase
 spec:
-  address: https://vault.boldorigins.io
+  address: http://vault.security.svc.cluster.local:8200
   skipTLSVerify: true
 ---
 apiVersion: secrets.hashicorp.com/v1beta1

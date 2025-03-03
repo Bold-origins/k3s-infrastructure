@@ -27,7 +27,7 @@ spec:
           memory: 256Mi
     defaultVaultConnection:
       enabled: true
-      address: https://vault.boldorigin.io
+      address: http://vault.security.svc.cluster.local:8200
     defaultAuthMethod:
       enabled: true
       method: kubernetes
